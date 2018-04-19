@@ -3,18 +3,19 @@ apply plugin: 'com.jfrog.bintray'
 
 // 版本号，下次更新是只需要更改版本号即可
 version = "1.0.0"
+// gradlew bintrayUpload
 
 //项目主页
-def siteUrl = 'https://github.com/linglongxin24/SQLite'    // project homepage
+def siteUrl = 'https://github.com/lnkywd/CommonUtils'    // project homepage
 //项目的版本控制地址
-def gitUrl = 'https://github.com/linglongxin24/SQLite.git' // project git
+def gitUrl = 'https://github.com/lnkywd/CommonUtils.git' // project git
 
 //发布到组织名称名字，必须填写
 group = "com.wd.utils"
 //发布到JCenter上的项目名字，必须填写
 def libName = "common"
 
-/**  上面配置后上传至jcenter后的编译路径是这样的： compile 'cn.bluemobi.dylan:sqlitelibrary:1.0'  **/
+/**  上面配置后上传至jcenter后的编译路径是这样的： compile 'com.wd.utils:common:1.0.0'  **/
 
 //生成源文件
 task sourcesJar(type: Jar) {
@@ -67,9 +68,9 @@ install {
                 }
                 developers {
                     developer {
-                        id 'linglongxin24'
-                        name 'dylan'
-                        email 'linglongxin24@163.com'
+                        id 'wdman'
+                        name 'wdman'
+                        email 'lnkywd@gmail.com'
                     }
                 }
                 scm {
@@ -90,9 +91,10 @@ bintray {
     key = properties.getProperty("bintray.apikey")   //读取 local.properties 文件里面的 bintray.apikey
     configurations = ['archives']
     pkg {
+//        userOrg = "wdman"
         repo = "maven"
         name = libName    //发布到JCenter上的项目名字，必须填写
-        desc = 'This is a Android project utilsk'    //项目描述
+        desc = 'This is a Android project utils'    //项目描述
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]
