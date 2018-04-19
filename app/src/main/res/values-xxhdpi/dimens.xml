@@ -1,0 +1,10 @@
+<resources>
+    <!-- Progress Dialog-->
+    <dimen name="progress_dialog_size">128dp</dimen>
+    <dimen name="progress_dialog_corner_radius">4dp</dimen>
+    <dimen name="progress_dialog_img_size">56dp</dimen>
+    <dimen name="progress_dialog_txt_m_t">16dp</dimen>
+    <dimen name="progress_dialog_txt_size">16sp</dimen>
+    <dimen name="px300">150dp</dimen>
+
+</resources>

@@ -1,0 +1,16 @@
+*~
+.DS_Store
+bin/
+gen/
+out/
+.gradle/
+build/
+.idea/
+captures/
+local.properties
+proguard/
+*.iml
+.externalNativeBuild
+*.dex
+*.apk
+*.ap_

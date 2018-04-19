@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">BaseApplication</string>
+    <string name="expand">全文</string>
+    <string name="shrink">收起</string>
+    <string name="relogin_tip_text">下线通知</string>
+    <string name="relogin_tip_content_text">您的账号于另一台手机上登录</string>
+    <string name="relogin_cancel">退出</string>
+    <string name="relogin_submit">重新登录</string>
+</resources>
