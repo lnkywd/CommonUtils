@@ -59,6 +59,10 @@ public abstract class BaseBackActivity extends BaseActivity {
         return getSupportActionBar();
     }
 
+    public void setBackgroundColor(int color) {
+        baseBinding.toolbar.setBackgroundColor(color);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (backClick()) {

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.multidex.MultiDex;
 
-import com.squareup.leakcanary.LeakCanary;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.List;
@@ -78,17 +77,10 @@ public class LibsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        sInstance = this;
         boolean defaultProcess = shouldInit();
         if (defaultProcess) {
+            sInstance = this;
             Utils.init(this);
-            // 内存泄露检查工具
-            if (LeakCanary.isInAnalyzerProcess(this)) {
-                // This process is dedicated to LeakCanary for heap analysis.
-                // You should not init your app in this process.
-                return;
-            }
-            LeakCanary.install(this);
             initLog();
             CrashUtils.init();
             registerActivityLifecycleCallbacks(mCallbacks);

@@ -69,7 +69,6 @@ public class BaseWebView extends RelativeLayout {
         }
         mBinding.webViewAdv.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
         mBinding.webViewAdv.setBackgroundColor(0);//设置背景透明
-        mBinding.webViewAdv.addJavascriptInterface(new H5ForJs(), getJsName());
         mBinding.webViewAdv.setWebChromeClient(new WebChromeClient() {
 
             @Override
@@ -128,10 +127,6 @@ public class BaseWebView extends RelativeLayout {
         });
     }
 
-    protected String getJsName() {
-        return "";
-    }
-
     public BaseWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
@@ -140,6 +135,10 @@ public class BaseWebView extends RelativeLayout {
     public BaseWebView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+    }
+
+    public void registerJavascriptInterfaces(Object javascriptInterface, String jsInterfaceName) {
+        mBinding.webViewAdv.addJavascriptInterface(javascriptInterface, jsInterfaceName);
     }
 
     public void setShowProgress(boolean showProgress) {
@@ -197,10 +196,6 @@ public class BaseWebView extends RelativeLayout {
         void changeTitle(String title);
 
         void onLoadFinish();
-
-    }
-
-    protected class H5ForJs {
 
     }
 

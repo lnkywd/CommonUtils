@@ -1,6 +1,5 @@
 package common.utils.base.http;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import common.utils.utils.NetworkUtils;
@@ -15,18 +14,15 @@ import retrofit2.Response;
 
 public abstract class HttpAction<T> implements Observer<T> {
 
-    private Context context;
     /**
      * 是否静默请求
      */
     private boolean quiet = false;
 
-    public HttpAction(Context context) {
-        this.context = context;
+    public HttpAction() {
     }
 
-    public HttpAction(Context context, boolean quiet) {
-        this.context = context;
+    public HttpAction(boolean quiet) {
         this.quiet = quiet;
     }
 
