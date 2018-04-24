@@ -1,23 +1,17 @@
 package common.utils;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.multidex.MultiDex;
 
-import com.scwang.smartrefresh.layout.SmartRefreshLayout;
-import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreator;
-import com.scwang.smartrefresh.layout.api.DefaultRefreshHeaderCreator;
-import com.scwang.smartrefresh.layout.api.RefreshFooter;
-import com.scwang.smartrefresh.layout.api.RefreshHeader;
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.squareup.leakcanary.LeakCanary;
 import com.umeng.analytics.MobclickAgent;
 
-import common.utils.base.http.HttpManage;
+import java.util.List;
+
 import common.utils.utils.CrashUtils;
 import common.utils.utils.LogUtils;
 import common.utils.utils.Utils;
@@ -31,29 +25,6 @@ public class LibsApplication extends Application {
     private static final String TAG = "LibsApplication";
     private static LibsApplication sInstance;
 
-    //static 代码段可以防止内存泄露
-    static {
-        //设置全局的Header构建器
-        SmartRefreshLayout.setDefaultRefreshHeaderCreator(new DefaultRefreshHeaderCreator() {
-            @NonNull
-            @Override
-            public RefreshHeader createRefreshHeader(@NonNull Context context, @NonNull RefreshLayout layout) {
-                return new common.utils.view.RefreshHeader(context);
-            }
-        });
-        //设置全局的Footer构建器
-        SmartRefreshLayout.setDefaultRefreshFooterCreator(new DefaultRefreshFooterCreator() {
-            @Override
-            public RefreshFooter createRefreshFooter(Context context, RefreshLayout layout) {
-                //指定为经典Footer，默认是 BallPulseFooter
-                return new ClassicsFooter(context).setDrawableSize(20).setPrimaryColorId(R.color.color_background);
-            }
-        });
-    }
-
-    private boolean isDebug;
-    private String mUrl;
-    private NetWorkApi netWorkApi;
     private ActivityLifecycleCallbacks mCallbacks = new ActivityLifecycleCallbacks() {
 
         @Override
@@ -107,39 +78,40 @@ public class LibsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        isDebug = isDebug();
-        mUrl = getUrl();
         sInstance = this;
-        Utils.init(this);
-        initLeakCanary();
-        initLog(isDebug);
-        initCrash();
-        netWorkApi = HttpManage.getInstance(mUrl, isDebug).creat(NetWorkApi.class);
-        registerActivityLifecycleCallbacks(mCallbacks);
+        boolean defaultProcess = shouldInit();
+        if (defaultProcess) {
+            Utils.init(this);
+            // 内存泄露检查工具
+            if (LeakCanary.isInAnalyzerProcess(this)) {
+                // This process is dedicated to LeakCanary for heap analysis.
+                // You should not init your app in this process.
+                return;
+            }
+            LeakCanary.install(this);
+            initLog();
+            CrashUtils.init();
+            registerActivityLifecycleCallbacks(mCallbacks);
+        }
     }
 
-    protected boolean isDebug() {
+    private boolean shouldInit() {
+        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
+        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+        String mainProcessName = getPackageName();
+        int myPid = android.os.Process.myPid();
+        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
+            if (info.pid == myPid && mainProcessName.equals(info.processName)) {
+                return true;
+            }
+        }
         return false;
     }
 
-    protected String getUrl() {
-        return "";
-    }
-
-    private void initLeakCanary() {
-        // 内存泄露检查工具
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this);
-    }
-
-    public void initLog(boolean isDebug) {
+    public void initLog() {
         LogUtils.Config config = LogUtils.getConfig()
-                .setLogSwitch(isDebug)// 设置log总开关，包括输出到控制台和文件，默认开
-                .setConsoleSwitch(isDebug)// 设置是否输出到控制台开关，默认开
+                .setLogSwitch(isDebug())// 设置log总开关，包括输出到控制台和文件，默认开
+                .setConsoleSwitch(isDebug())// 设置是否输出到控制台开关，默认开
                 .setGlobalTag(null)// 设置log全局标签，默认为空
                 // 当全局标签不为空时，我们输出的log全部为该tag，
                 // 为空时，如果传入的tag为空那就显示类名，否则显示tag
@@ -154,14 +126,7 @@ public class LibsApplication extends Application {
         LogUtils.d(config.toString());
     }
 
-    private void initCrash() {
-        CrashUtils.init();
-    }
-
-    public NetWorkApi getNetWorkApi() {
-        if (netWorkApi == null) {
-            netWorkApi = HttpManage.getInstance(mUrl, isDebug).creat(NetWorkApi.class);
-        }
-        return netWorkApi;
+    protected boolean isDebug() {
+        return false;
     }
 }

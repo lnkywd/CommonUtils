@@ -30,10 +30,6 @@ public class WebProgressBar extends View {
     // 是否已经加载完成
     private boolean mHasLoad = false;
 
-    public void setOnEndListener(OnEndListener listener) {
-        this.mListener = listener;
-    }
-
     public WebProgressBar(Context context) {
         this(context, null);
     }
@@ -52,6 +48,10 @@ public class WebProgressBar extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setColor(ContextCompat.getColor(getContext(), R.color.a4b94ee));
+    }
+
+    public void setOnEndListener(OnEndListener listener) {
+        this.mListener = listener;
     }
 
     @Override
@@ -91,10 +91,6 @@ public class WebProgressBar extends View {
         invalidate();
     }
 
-    public interface OnEndListener {
-        void onEnd();//动画结束的回调
-    }
-
     public void setFinishProgress() {
         if (mDrawProgress <= 5) {
             mHasLoad = true;
@@ -114,13 +110,14 @@ public class WebProgressBar extends View {
         animator.start();
         animator.addListener(new Animator.AnimatorListener() {
             @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
                 hideProgress();
             }
 
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
 
             @Override
             public void onAnimationCancel(Animator animation) {
@@ -172,6 +169,10 @@ public class WebProgressBar extends View {
         });
     }
 
+    public void setColor(int color) {
+        mPaint.setColor(color);
+    }
+
     public void setDrawProgress() {
         this.mDrawProgress = 0;
         invalidate();
@@ -179,6 +180,10 @@ public class WebProgressBar extends View {
 
     public void setNormalProgress(int newProgress) {
         mCurProgress = newProgress;
+    }
+
+    public interface OnEndListener {
+        void onEnd();//动画结束的回调
     }
 
 

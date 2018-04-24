@@ -1,4 +1,4 @@
-package common.utils.view;
+package common.utils.base;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -23,6 +22,7 @@ import android.widget.RelativeLayout;
 import common.utils.R;
 import common.utils.databinding.LayoutBaseWebviewBinding;
 import common.utils.utils.ToastUtils;
+import common.utils.view.WebProgressBar;
 
 
 /**
@@ -32,33 +32,13 @@ import common.utils.utils.ToastUtils;
 public class BaseWebView extends RelativeLayout {
 
     private static final String TAG = BaseWebView.class.getSimpleName();
-    private static final String JS_NAME = "Aplan";
 
     private LayoutBaseWebviewBinding mBinding;
-
     private OnWebTitleChangeListener listener;
-    private OnH5ForJsListener mH5JsListener;
-
-    public void setH5JsListener(OnH5ForJsListener mH5JsListener) {
-        this.mH5JsListener = mH5JsListener;
-    }
-
-    public void setListener(OnWebTitleChangeListener listener) {
-        this.listener = listener;
-    }
+    private boolean showProgress = false;
 
     public BaseWebView(Context context) {
         super(context);
-        init();
-    }
-
-    public BaseWebView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
-    }
-
-    public BaseWebView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
         init();
     }
 
@@ -89,7 +69,7 @@ public class BaseWebView extends RelativeLayout {
         }
         mBinding.webViewAdv.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
         mBinding.webViewAdv.setBackgroundColor(0);//设置背景透明
-        mBinding.webViewAdv.addJavascriptInterface(new H5ForJs(), JS_NAME);
+        mBinding.webViewAdv.addJavascriptInterface(new H5ForJs(), getJsName());
         mBinding.webViewAdv.setWebChromeClient(new WebChromeClient() {
 
             @Override
@@ -118,16 +98,18 @@ public class BaseWebView extends RelativeLayout {
         mBinding.webViewAdv.setWebViewClient(new WebViewClient() {
 
             @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                mBinding.webProgress.setVisibility(View.VISIBLE);
-                mBinding.webProgress.setDrawProgress();
-            }
-
-            @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                if (showProgress) {
+                    mBinding.webProgress.setVisibility(View.VISIBLE);
+                    mBinding.webProgress.setDrawProgress();
+                }
             }
 
             @Override
@@ -136,7 +118,6 @@ public class BaseWebView extends RelativeLayout {
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 mBinding.webViewAdv.setVisibility(View.GONE);
                 ToastUtils.showShort("加载失败");
-
             }
 
             @Override
@@ -147,23 +128,26 @@ public class BaseWebView extends RelativeLayout {
         });
     }
 
-    public class H5ForJs {
-
-        /**
-         * 动态教育详情点赞
-         *
-         * @param type 点赞类型
-         * @param id   id
-         */
-        @JavascriptInterface
-        public void AgreeAdd(String type, String id) {
-
-        }
-
+    protected String getJsName() {
+        return "";
     }
 
-    public interface OnH5ForJsListener {
+    public BaseWebView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
 
+    public BaseWebView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    public void setShowProgress(boolean showProgress) {
+        this.showProgress = showProgress;
+    }
+
+    public void setListener(OnWebTitleChangeListener listener) {
+        this.listener = listener;
     }
 
     public WebView getWebView() {
@@ -171,7 +155,6 @@ public class BaseWebView extends RelativeLayout {
     }
 
     public void setUrl(String url) {
-        Log.d(TAG, "----webView----url----" + url);
         if (mBinding != null) {
             mBinding.webViewAdv.loadUrl(url);
         }
@@ -214,6 +197,10 @@ public class BaseWebView extends RelativeLayout {
         void changeTitle(String title);
 
         void onLoadFinish();
+
+    }
+
+    protected class H5ForJs {
 
     }
 

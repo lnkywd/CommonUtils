@@ -3,7 +3,6 @@ package common.utils.base.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Build;
@@ -27,15 +26,12 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseVi
     protected Context mContext;
 
     private boolean showStatusBar = false;
-    //token过期广播
-    private IntentFilter intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity = this;
         mContext = this;
-        intentFilter = new IntentFilter("com.i500.tutor.RE_LOGIN_RECEIVER");
         Bundle bundle = getIntent().getExtras();
         setLayout(bindLayout());
         initData(bundle);

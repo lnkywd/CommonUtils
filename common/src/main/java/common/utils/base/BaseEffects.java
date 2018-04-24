@@ -15,8 +15,6 @@ public abstract class BaseEffects {
         mAnimatorSet = new AnimatorSet();
     }
 
-    protected abstract void setupAnimation(View view);
-
     public void start(View view) {
         reset(view);
         setupAnimation(view);
@@ -28,6 +26,7 @@ public abstract class BaseEffects {
         ViewHelper.setPivotY(view, view.getMeasuredHeight() / 2.0f);
     }
 
+    protected abstract void setupAnimation(View view);
 
     public AnimatorSet getAnimatorSet() {
         return mAnimatorSet;

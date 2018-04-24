@@ -1,8 +1,8 @@
 package common.utils.base.http;
 
 import android.content.Context;
-import android.content.Intent;
 import android.text.TextUtils;
+
 import common.utils.utils.NetworkUtils;
 import common.utils.utils.ToastUtils;
 import io.reactivex.Observer;
@@ -45,12 +45,11 @@ public abstract class HttpAction<T> implements Observer<T> {
             }
             code = ((ApiResponseWraper) t).getCode();
             msg = ((ApiResponseWraper) t).getMessage();
-            if (null != code && TextUtils.equals("508", code)) {
-                sendReLoginReceiver();
+            if (code == null || TextUtils.isEmpty(code) || customCodeDeal(Integer.parseInt(code))) {
                 onHttpError(null);
                 return;
             }
-            if (TextUtils.equals("200", code)) {
+            if (TextUtils.equals(successCode(), code)) {
                 onHttpSuccess(t);
             } else {
                 onHttpSuccess(t, code, msg);
@@ -83,9 +82,12 @@ public abstract class HttpAction<T> implements Observer<T> {
 
     public abstract void onHttpError(Response response);
 
-    private void sendReLoginReceiver() {
-        Intent intent = new Intent("com.i500m.tutor.RE_LOGIN_RECEIVER");
-        context.sendBroadcast(intent);
+    protected boolean customCodeDeal(int code) {
+        return false;
+    }
+
+    protected String successCode() {
+        return "200";
     }
 
     public abstract void onHttpSuccess(T data);

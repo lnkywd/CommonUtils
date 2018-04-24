@@ -389,7 +389,7 @@ public class CustomBannerView extends RelativeLayout {
         //添加viewpager到SliderLayout
         addView(pager);
         if (pagerHeight != 0) {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, pagerHeight);
+            LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, pagerHeight);
             pager.setLayoutParams(params);
         }
         ImageView mask = new ImageView(getContext());
