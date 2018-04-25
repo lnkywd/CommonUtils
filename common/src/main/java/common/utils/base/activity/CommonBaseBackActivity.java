@@ -5,8 +5,11 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrConfig;
@@ -20,7 +23,7 @@ import common.utils.view.ViewClick;
  * Created by Administrator on 2017/11/2 0002.
  */
 
-public abstract class BaseBackActivity extends BaseActivity {
+public abstract class CommonBaseBackActivity extends CommonBaseActivity {
     protected ActivityBaseBackBinding baseBinding;
 
     @Override
@@ -97,10 +100,15 @@ public abstract class BaseBackActivity extends BaseActivity {
     }
 
     protected void setCommonTitleText(String text) {
-        baseBinding.barTitleTv.setTextColor(ContextCompat.getColor(this, R.color.a333333));
-        setLiftBackBackground(R.mipmap.icon_train_register_back);
+        baseBinding.barTitleTv.setTextColor(titleColor());
+        setLiftBackBackground(imgRes());
         baseBinding.barTitleTv.setText(text);
     }
+
+    /**
+     * 设置标题的颜色
+     */
+    protected abstract int titleColor();
 
     protected void setLiftBackBackground(@DrawableRes int id) {
 //        baseBinding.toolbar.setNavigationIcon(id);
@@ -115,6 +123,11 @@ public abstract class BaseBackActivity extends BaseActivity {
             }
         });
     }
+
+    /**
+     * 设置返回的图标
+     */
+    protected abstract int imgRes();
 
     /**
      * 隐藏右侧文字
@@ -175,6 +188,18 @@ public abstract class BaseBackActivity extends BaseActivity {
     protected void setRightClick(ViewClick click) {
         baseBinding.barTitleShare.setOnClickListener(click);
         baseBinding.barTitleRightTv.setOnClickListener(click);
+    }
+
+    protected TextView getTitleTv() {
+        return baseBinding.barTitleTv;
+    }
+
+    protected ImageView getLeftIv() {
+        return baseBinding.back;
+    }
+
+    protected Toolbar getToolbar() {
+        return baseBinding.toolbar;
     }
 
     /**

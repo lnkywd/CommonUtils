@@ -29,7 +29,7 @@ public abstract class BaseFragment extends RxFragment
     protected View contentView;
 
 
-    protected BaseActivity mActivity;
+    protected CommonBaseActivity mActivity;
     protected Context mContext;
 
     @Override
@@ -46,7 +46,7 @@ public abstract class BaseFragment extends RxFragment
             ft.commit();
         }
         Log.d(TAG, "onCreate: ");
-        mContext = mActivity = (BaseActivity) getActivity();
+        mContext = mActivity = (CommonBaseActivity) getActivity();
     }
 
     @SuppressLint("ResourceType")

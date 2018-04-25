@@ -23,9 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,23 +84,8 @@ public class CustomBannerView extends RelativeLayout {
     private boolean isLoop = true;
 
     private boolean isCornerImg = false;
-
-    private enum Shape {
-        rect, oval
-    }
-
-    private enum Position {
-        centerBottom,
-        rightBottom,
-        leftBottom,
-        centerTop,
-        rightTop,
-        leftTop
-    }
-
     private OnBannerItemClickListener onBannerItemClickListener;
     private BannerOnPageChangeListener bannerOnPageChangeListener;
-
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
@@ -120,16 +102,6 @@ public class CustomBannerView extends RelativeLayout {
     public CustomBannerView(Context context) {
         super(context);
         init(null, 0);
-    }
-
-    public CustomBannerView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(attrs, 0);
-    }
-
-    public CustomBannerView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(attrs, defStyleAttr);
     }
 
     private void init(AttributeSet attrs, int defStyle) {
@@ -216,6 +188,16 @@ public class CustomBannerView extends RelativeLayout {
                 r2, r2, r3, r3});
     }
 
+    public CustomBannerView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(attrs, 0);
+    }
+
+    public CustomBannerView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(attrs, defStyleAttr);
+    }
+
     //添加本地图片路径
     public void setViewRes(List<Integer> viewRes) {
         if (viewRes == null || viewRes.size() == 0) {
@@ -264,113 +246,8 @@ public class CustomBannerView extends RelativeLayout {
 //        } else {
 //            Glide.with(getContext()).load(res).crossFade().into(imageView);
 //        }
-        Glide.with(imageView.getContext())
-                .load(res)
-                .apply(new RequestOptions()
-                        .placeholder(R.drawable.ic_default)
-                        .error(R.drawable.ic_default)
-                        .dontAnimate())
-                .into(imageView);
+        GlideUtils.displayImage(imageView, res);
         return imageView;
-    }
-
-    //添加网络图片路径
-    public void setViewUrls(List<String> urls) {
-        setViewUrls(urls, false);
-    }
-
-    //添加网络图片路径
-    public void setViewUrls(List<String> urls, boolean cornerImg) {
-        isCornerImg = cornerImg;
-        if (urls == null) {
-            urls = new ArrayList<>();
-        }
-        if (urls.isEmpty()) {
-            urls.add("");
-        }
-        List<View> views = new ArrayList<View>();
-        itemCount = urls.size();
-        //主要是解决当item为小于3个的时候滑动有问题，这里将其拼凑成3个以上
-        if (itemCount < 1) {//当item个数0
-            throw new IllegalStateException("item count not equal zero");
-        } else if (itemCount < 2) { //当item个数为1
-            views.add(getImageView(urls.get(0), 0));
-//            views.add(getImageView(urls.get(0), 0));
-//            views.add(getImageView(urls.get(0), 0));
-        } else if (itemCount < 3) {//当item个数为2
-            views.add(getImageView(urls.get(0), 0));
-            views.add(getImageView(urls.get(1), 1));
-            views.add(getImageView(urls.get(0), 0));
-            views.add(getImageView(urls.get(1), 1));
-        } else {
-            for (int i = 0; i < urls.size(); i++) {
-                views.add(getImageView(urls.get(i), i));
-            }
-        }
-        setViews2(views);
-    }
-
-    @NonNull
-    private ImageView getImageView(final String url, final int position) {
-        ImageView imageView = new ImageView(getContext());
-        imageView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onBannerItemClickListener != null && !TextUtils.isEmpty(url)) {
-                    onBannerItemClickListener.onItemClick(position);
-                }
-            }
-        });
-        imageView.setScaleType(scaleType);
-//        if (placeholder != 0 && errorHolder == 0) {
-//            Glide.with(getContext()).load(url).placeholder(placeholder).crossFade().into(imageView);
-//        } else if (placeholder == 0 && errorHolder != 0) {
-//            Glide.with(getContext()).load(url).error(errorHolder).crossFade().into(imageView);
-//        } else if (placeholder != 0 && errorHolder != 0) {
-//            Glide.with(getContext()).load(url).placeholder(placeholder).error(errorHolder).crossFade().into(imageView);
-//        } else {
-//            Glide.with(getContext()).load(url).crossFade().into(imageView);
-//        }
-        if (isCornerImg) {
-            GlideUtils.displayRoundImage(imageView.getContext(), imageView, url);
-        } else {
-            Glide.with(imageView.getContext())
-                    .load(url)
-                    .apply(new RequestOptions()
-                            .placeholder(R.drawable.ic_default)
-                            .error(R.drawable.ic_default)
-                            .dontAnimate())
-                    .into(imageView);
-        }
-        return imageView;
-    }
-
-    public void setScaleType(ImageView.ScaleType scaleType) {
-        this.scaleType = scaleType;
-    }
-
-    //添加任意View视图
-    public void setViews(final List<View> list) {
-        if (list == null || list.size() < 1) {
-            return;
-        }
-        itemCount = list.size();
-        List<View> views = new ArrayList<>();
-        if (itemCount < 2) { //当item个数为1
-            views.add(list.get(0));
-            views.add(list.get(0));
-            views.add(list.get(0));
-        } else if (itemCount < 3) {//当item个数为2
-            views.add(list.get(0));
-            views.add(list.get(0));
-            views.add(list.get(1));
-            views.add(list.get(1));
-        } else {
-            for (int i = 0; i < list.size(); i++) {
-                views.add(list.get(i));
-            }
-        }
-        initView(views);
     }
 
     //添加任意View视图
@@ -480,6 +357,17 @@ public class CustomBannerView extends RelativeLayout {
     }
 
     /**
+     * 切换指示器状态
+     *
+     * @param currentPosition 当前位置
+     */
+    private void switchIndicator(int currentPosition) {
+        for (int i = 0; i < indicatorContainer.getChildCount(); i++) {
+            ((ImageView) indicatorContainer.getChildAt(i)).setImageDrawable(i == currentPosition ? selectedDrawable : unSelectedDrawable);
+        }
+    }
+
+    /**
      * 开始自动轮播
      */
     public void startAutoPlay() {
@@ -487,6 +375,108 @@ public class CustomBannerView extends RelativeLayout {
         if (isAutoPlay) {
             handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
         }
+    }
+
+    /**
+     * 停止自动轮播
+     */
+    public void stopAutoPlay() {
+        if (isAutoPlay) {
+            handler.removeMessages(WHAT_AUTO_PLAY);
+        }
+    }
+
+    //添加网络图片路径
+    public void setViewUrls(List<String> urls) {
+        setViewUrls(urls, false);
+    }
+
+    //添加网络图片路径
+    public void setViewUrls(List<String> urls, boolean cornerImg) {
+        isCornerImg = cornerImg;
+        if (urls == null) {
+            urls = new ArrayList<>();
+        }
+        if (urls.isEmpty()) {
+            urls.add("");
+        }
+        List<View> views = new ArrayList<View>();
+        itemCount = urls.size();
+        //主要是解决当item为小于3个的时候滑动有问题，这里将其拼凑成3个以上
+        if (itemCount < 1) {//当item个数0
+            throw new IllegalStateException("item count not equal zero");
+        } else if (itemCount < 2) { //当item个数为1
+            views.add(getImageView(urls.get(0), 0));
+//            views.add(getImageView(urls.get(0), 0));
+//            views.add(getImageView(urls.get(0), 0));
+        } else if (itemCount < 3) {//当item个数为2
+            views.add(getImageView(urls.get(0), 0));
+            views.add(getImageView(urls.get(1), 1));
+            views.add(getImageView(urls.get(0), 0));
+            views.add(getImageView(urls.get(1), 1));
+        } else {
+            for (int i = 0; i < urls.size(); i++) {
+                views.add(getImageView(urls.get(i), i));
+            }
+        }
+        setViews2(views);
+    }
+
+    @NonNull
+    private ImageView getImageView(final String url, final int position) {
+        ImageView imageView = new ImageView(getContext());
+        imageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onBannerItemClickListener != null && !TextUtils.isEmpty(url)) {
+                    onBannerItemClickListener.onItemClick(position);
+                }
+            }
+        });
+        imageView.setScaleType(scaleType);
+//        if (placeholder != 0 && errorHolder == 0) {
+//            Glide.with(getContext()).load(url).placeholder(placeholder).crossFade().into(imageView);
+//        } else if (placeholder == 0 && errorHolder != 0) {
+//            Glide.with(getContext()).load(url).error(errorHolder).crossFade().into(imageView);
+//        } else if (placeholder != 0 && errorHolder != 0) {
+//            Glide.with(getContext()).load(url).placeholder(placeholder).error(errorHolder).crossFade().into(imageView);
+//        } else {
+//            Glide.with(getContext()).load(url).crossFade().into(imageView);
+//        }
+        if (isCornerImg) {
+            GlideUtils.displayRoundCenterImage(imageView, url);
+        } else {
+            GlideUtils.displayImage(imageView, url);
+        }
+        return imageView;
+    }
+
+    public void setScaleType(ImageView.ScaleType scaleType) {
+        this.scaleType = scaleType;
+    }
+
+    //添加任意View视图
+    public void setViews(final List<View> list) {
+        if (list == null || list.size() < 1) {
+            return;
+        }
+        itemCount = list.size();
+        List<View> views = new ArrayList<>();
+        if (itemCount < 2) { //当item个数为1
+            views.add(list.get(0));
+            views.add(list.get(0));
+            views.add(list.get(0));
+        } else if (itemCount < 3) {//当item个数为2
+            views.add(list.get(0));
+            views.add(list.get(0));
+            views.add(list.get(1));
+            views.add(list.get(1));
+        } else {
+            for (int i = 0; i < list.size(); i++) {
+                views.add(list.get(i));
+            }
+        }
+        initView(views);
     }
 
     @Override
@@ -519,15 +509,6 @@ public class CustomBannerView extends RelativeLayout {
         isAutoPlay = autoPlay;
     }
 
-    /**
-     * 停止自动轮播
-     */
-    public void stopAutoPlay() {
-        if (isAutoPlay) {
-            handler.removeMessages(WHAT_AUTO_PLAY);
-        }
-    }
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         switch (ev.getAction()) {
@@ -542,24 +523,50 @@ public class CustomBannerView extends RelativeLayout {
         return super.dispatchTouchEvent(ev);
     }
 
-    /**
-     * 切换指示器状态
-     *
-     * @param currentPosition 当前位置
-     */
-    private void switchIndicator(int currentPosition) {
-        for (int i = 0; i < indicatorContainer.getChildCount(); i++) {
-            ((ImageView) indicatorContainer.getChildAt(i)).setImageDrawable(i == currentPosition ? selectedDrawable : unSelectedDrawable);
-        }
-    }
-
-
     public void setOnBannerItemClickListener(OnBannerItemClickListener onBannerItemClickListener) {
         this.onBannerItemClickListener = onBannerItemClickListener;
     }
 
+    public ViewPager getViewPager() {
+        return pager;
+    }
+
+    public void setBannerOnPageChangeListener(BannerOnPageChangeListener bannerOnPageChangeListener) {
+        this.bannerOnPageChangeListener = bannerOnPageChangeListener;
+    }
+
+    // 设置是否允许 循环
+    public void setLoop(boolean loop) {
+        isLoop = loop;
+    }
+
+    private enum Shape {
+        rect, oval
+    }
+
+    private enum Position {
+        centerBottom,
+        rightBottom,
+        leftBottom,
+        centerTop,
+        rightTop,
+        leftTop
+    }
+
     public interface OnBannerItemClickListener {
         void onItemClick(int position);
+    }
+
+    public interface BannerOnPageChangeListener {
+//        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//            // This space for rent
+//        }
+
+        public void onPageSelected(int position);
+
+//        public void onPageScrollStateChanged(int state) {
+//            // This space for rent
+//        }
     }
 
     public class LoopPagerAdapter extends PagerAdapter {
@@ -573,11 +580,6 @@ public class CustomBannerView extends RelativeLayout {
         public int getCount() {
             //Integer.MAX_VALUE = 2147483647
             return isLoop && itemCount > 1 ? Integer.MAX_VALUE : itemCount;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
         }
 
         @Override
@@ -597,10 +599,11 @@ public class CustomBannerView extends RelativeLayout {
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
         }
-    }
 
-    public ViewPager getViewPager() {
-        return pager;
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
     }
 
     public class FixedSpeedScroller extends Scroller {
@@ -611,19 +614,13 @@ public class CustomBannerView extends RelativeLayout {
             super(context);
         }
 
-        public FixedSpeedScroller(Context context, Interpolator interpolator) {
-            super(context, interpolator);
-        }
-
         public FixedSpeedScroller(Context context, Interpolator interpolator, int duration) {
             this(context, interpolator);
             mDuration = duration;
         }
 
-        @Override
-        public void startScroll(int startX, int startY, int dx, int dy, int duration) {
-            // Ignore received duration, use fixed one instead
-            super.startScroll(startX, startY, dx, dy, mDuration);
+        public FixedSpeedScroller(Context context, Interpolator interpolator) {
+            super(context, interpolator);
         }
 
         @Override
@@ -631,26 +628,11 @@ public class CustomBannerView extends RelativeLayout {
             // Ignore received duration, use fixed one instead
             super.startScroll(startX, startY, dx, dy, mDuration);
         }
-    }
 
-    public interface BannerOnPageChangeListener {
-//        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//            // This space for rent
-//        }
-
-        public void onPageSelected(int position);
-
-//        public void onPageScrollStateChanged(int state) {
-//            // This space for rent
-//        }
-    }
-
-    public void setBannerOnPageChangeListener(BannerOnPageChangeListener bannerOnPageChangeListener) {
-        this.bannerOnPageChangeListener = bannerOnPageChangeListener;
-    }
-
-    // 设置是否允许 循环
-    public void setLoop(boolean loop) {
-        isLoop = loop;
+        @Override
+        public void startScroll(int startX, int startY, int dx, int dy, int duration) {
+            // Ignore received duration, use fixed one instead
+            super.startScroll(startX, startY, dx, dy, mDuration);
+        }
     }
 }

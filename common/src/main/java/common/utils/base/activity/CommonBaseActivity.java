@@ -16,16 +16,13 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import common.utils.R;
 import common.utils.utils.BarUtils;
-import common.utils.utils.ProgressDialogUtils;
 
 
-public abstract class BaseActivity extends RxAppCompatActivity implements BaseView {
+public abstract class CommonBaseActivity extends RxAppCompatActivity implements BaseView {
 
     protected View contentView;
-    protected BaseActivity mActivity;
+    protected CommonBaseActivity mActivity;
     protected Context mContext;
-
-    private boolean showStatusBar = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,61 +40,21 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseVi
     }
 
     protected void setLayout(View view) {
-        overridePendingTransition(R.anim.slide_from_right,R.anim.keep_anim);
+        overridePendingTransition(R.anim.slide_from_right, R.anim.keep_anim);
         setContentView(view);
         contentView = view;
         initStatusBar(setStatusBarColor(), isShowStatusBar());
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void startActivityForResult(Intent intent, int requestCode) {
-        super.startActivityForResult(intent, requestCode);
-        overridePendingTransition(R.anim.slide_from_right,R.anim.keep_anim);
-    }
-
-    @SuppressLint("RestrictedApi")
-    @Override
-    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
-        super.startActivityForResult(intent, requestCode, options);
-        overridePendingTransition(R.anim.slide_from_right,R.anim.keep_anim);
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ProgressDialogUtils.dismissDialog();
-    }
-
-    public <T extends ViewDataBinding> T getDataBinding(int layoutId) {
-        T t = DataBindingUtil.inflate(getLayoutInflater(), layoutId, null, false);
-        return t;
     }
 
     protected void initStatusBar(@ColorRes int color, boolean isShow) {
         if (isShow) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (color == 0 || color == R.color.app_white_bar_color) {
-                    color = R.color.white;
+                    color = topCommonColor();
                 }
                 BarUtils.setStatusBarColor(this, ContextCompat.getColor(this, color), 0);
                 contentView.setFitsSystemWindows(true);
-                if (color == R.color.white)
+                if (color == topCommonColor())
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                 else {
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -116,4 +73,51 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseVi
             BarUtils.setStatusBarColor(this, ContextCompat.getColor(this, color), 0);
         }
     }
+
+    /**
+     * 设置通用顶部颜色
+     *
+     * @return 颜色值
+     */
+    protected abstract int topCommonColor();
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode) {
+        super.startActivityForResult(intent, requestCode);
+        overridePendingTransition(R.anim.slide_from_right, R.anim.keep_anim);
+    }
+
+    @SuppressLint("RestrictedApi")
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
+        super.startActivityForResult(intent, requestCode, options);
+        overridePendingTransition(R.anim.slide_from_right, R.anim.keep_anim);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
+    }
+
+    public <T extends ViewDataBinding> T getDataBinding(int layoutId) {
+        T t = DataBindingUtil.inflate(getLayoutInflater(), layoutId, null, false);
+        return t;
+    }
+
 }

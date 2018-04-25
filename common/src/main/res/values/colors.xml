@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#fff</color>
-    <color name="colorPrimaryDark">#4b94ee</color>
-    <color name="colorAccent">#4b94ee</color>
 
-    <color name="color_background">#f4f4f4</color>
-    <color name="color_common_line">#dfdfdf</color>
+    <color name="colorPrimary">#fff</color>
+    <color name="colorPrimaryDark">#fff</color>
+    <color name="colorAccent">#fff</color>
 
     <color name="white">#fff</color>
     <color name="black">#000</color>

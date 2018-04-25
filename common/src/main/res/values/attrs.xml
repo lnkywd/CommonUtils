@@ -1,56 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="RevealTextView">
-        <attr name="rtv_duration" format="integer" />
-        <attr name="android:text" />
-    </declare-styleable>
 
-    <declare-styleable name="TextViewExpandableAnimation">
-        <attr name="tvea_expandLines" format="integer" />
-        <attr name="tvea_shrinkBitmap" format="reference" />
-        <attr name="tvea_expandBitmap" format="reference" />
-        <attr name="tvea_textStateColor" format="color" />
-        <attr name="tvea_textContentColor" format="color" />
-        <attr name="tvea_textContentSize" format="dimension" />
-        <attr name="tvea_textShrink" format="string" />
-        <attr name="tvea_textExpand" format="string" />
-    </declare-styleable>
-    <!-- 带有数字进度条的attrs -->
-    <declare-styleable name="NumberProgressBar">
-        <attr name="progress" format="integer" />
-        <attr name="max" format="integer" />
-        <attr name="progress_unreached_color" format="color" />
-        <attr name="progress_reached_color" format="color" />
-        <attr name="progress_reached_bar_height" format="dimension" />
-        <attr name="progress_unreached_bar_height" format="dimension" />
-        <attr name="progress_text_size" format="dimension" />
-        <attr name="progress_text_color" format="color" />
-        <attr name="progress_text_offset" format="dimension" />
-        <attr name="progress_text_visibility" format="enum">
-            <enum name="visible" value="0" />
-            <enum name="invisible" value="1" />
-        </attr>
-    </declare-styleable>
-
-    <declare-styleable name="PullToNextLayout">
-
-        <attr name="underLayoutColor" format="color" />
-    </declare-styleable>
-
-    <declare-styleable name="PasswordInputView">
-        <attr name="pivBorderColor" format="color" />
-        <attr name="pivBorderWidth" format="dimension" />
-        <attr name="pivBorderRadius" format="dimension" />
-        <attr name="pivPasswordColor" format="color" />
-        <attr name="pivPasswordWidth" format="dimension" />
-        <attr name="pivPasswordRadius" format="dimension" />
-        <attr name="pivPasswordLength" format="integer" />
-    </declare-styleable>
-
-    <declare-styleable name="TSeekBar">
-        <attr name="textsize" format="dimension" />
-        <attr name="textcolor" format="color" />
-        <attr name="img" format="reference" />
+    <declare-styleable name="Common_HeadCircleView">
+        <attr name="civ_border_width" format="dimension" />
+        <attr name="civ_border_color" format="color" />
+        <attr name="civ_border_overlay" format="boolean" />
+        <attr name="civ_fill_color" format="color" />
     </declare-styleable>
 
     <declare-styleable name="BannerLayoutStyle">

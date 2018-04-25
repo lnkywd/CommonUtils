@@ -9,7 +9,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
@@ -150,17 +149,6 @@ public final class Utils {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static boolean isLogin(Context context) {
-        String uid = SharedPreferencesUtil.getUid(context);
-        String mobile = SharedPreferencesUtil.getMobile(context);
-        String token = SharedPreferencesUtil.getToken(context);
-        /**如果未登录返回True*/
-        if (!TextUtils.isEmpty(uid) && !TextUtils.isEmpty(mobile) && !TextUtils.isEmpty(token)) {
-            return false;
-        }
-        return true;
     }
 
     /**
