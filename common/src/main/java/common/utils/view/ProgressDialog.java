@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 
 import common.utils.R;
 import common.utils.utils.ColorUtils;
+import common.utils.utils.Handlers;
 
 
 /**
@@ -104,10 +105,15 @@ public class ProgressDialog extends Dialog {
         return this;
     }
 
-    public ProgressDialog animator(int res, Object img) {
+    public ProgressDialog animator(int res, final Object img) {
         animator = AnimatorInflater.loadAnimator(getContext(), res);
         animator.setTarget(mImg);
-        Glide.with(getContext()).load(img).into(mImg);
+        Handlers.sharedHandler(getContext()).post(new Runnable() {
+            @Override
+            public void run() {
+                Glide.with(getContext()).load(img).into(mImg);
+            }
+        });
         mImg.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         return this;

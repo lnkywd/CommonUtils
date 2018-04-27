@@ -24,6 +24,16 @@ android {
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
     }
+
+    // 依赖多个 aar
+    def dir = new File('app/libs')
+    dir.traverse(
+            nameFilter: ~/.*\.aar/
+    ) { file ->
+        def name = file.getName().replace('.aar', '')
+        implementation(name: name, ext: 'aar')
+    }
+
 }
 
 dependencies {
