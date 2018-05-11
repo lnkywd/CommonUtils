@@ -148,8 +148,13 @@ public class ProgressDialog extends Dialog {
         animation = null;
         animationDrawable = null;
         if (animator != null) {
-            animator.cancel();
-            animator.end();
+            Handlers.sharedHandler(getContext()).post(new Runnable() {
+                @Override
+                public void run() {
+                    animator.cancel();
+                    animator.end();
+                }
+            });
         }
     }
 
@@ -172,7 +177,12 @@ public class ProgressDialog extends Dialog {
             mImg.startAnimation(animation);
         }
         if (animator != null) {
-            animator.start();
+            Handlers.sharedHandler(getContext()).post(new Runnable() {
+                @Override
+                public void run() {
+                    animator.start();
+                }
+            });
         }
     }
 

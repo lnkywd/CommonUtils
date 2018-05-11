@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
-    <com.i500m.libs.android.view.DataImageView
-        android:id="@+id/edit_imageView"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:scaleType="fitXY" />
+    <FrameLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <common.utils.view.DataImageView
+            android:id="@+id/edit_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY" />
+
+        <ImageView
+            android:id="@+id/play"
+            android:layout_width="@dimen/spacing_43"
+            android:layout_height="@dimen/spacing_43"
+            android:layout_gravity="center"
+            android:src="@mipmap/icon_play"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/image_close"

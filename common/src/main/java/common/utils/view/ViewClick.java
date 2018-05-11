@@ -9,7 +9,7 @@ import android.view.View;
 public abstract class ViewClick implements View.OnClickListener {
 
     private static final int MIN_CLICK_DELAY_TIME = 1000;
-    private static long lastTime = 0;
+    private long lastTime = 0;
 
     @Override
     public void onClick(View view) {

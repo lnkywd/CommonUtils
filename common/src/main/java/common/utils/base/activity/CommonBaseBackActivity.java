@@ -35,8 +35,10 @@ public abstract class CommonBaseBackActivity extends CommonBaseActivity {
         mBinding = getDataBinding(R.layout.activity_common_base_back);
         contentView = mBinding.getRoot();
         setContentView(contentView);
-        initStatusBar(setStatusBarColor(), isShowStatusBar());
-        mBinding.container.addView(getTitleView());
+        initStatusBar(setStatusBarColor(), isShowStatusBar(), showTopBlackFont());
+        if (getTitleView() != null) {
+            mBinding.container.addView(getTitleView());
+        }
         mBinding.container.addView(view);
     }
 

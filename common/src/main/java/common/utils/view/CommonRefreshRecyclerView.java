@@ -7,12 +7,12 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 
 import java.util.List;
 
 import common.utils.utils.PixelUtils;
-import common.utils.utils.recycler.BaseDataBindingAdapter;
 import common.utils.utils.recycler.DividerItemBottomDecoration;
 
 /**
@@ -24,9 +24,9 @@ import common.utils.utils.recycler.DividerItemBottomDecoration;
 
 public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
 
-    private BaseDataBindingAdapter mAdapter;
+    private BaseQuickAdapter mAdapter;
     private RecyclerView mRecyclerView;
-    private int mPage;
+    private int mPage = 1;
 
     public CommonRefreshRecyclerView(Context context) {
         super(context);
@@ -49,6 +49,10 @@ public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
         initView(context);
     }
 
+    public BaseQuickAdapter getAdapter() {
+        return mAdapter;
+    }
+
     public void getData(boolean refresh) {
         mPage = refresh ? mPage = 1 : mPage + 1;
     }
@@ -57,7 +61,7 @@ public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
         return mPage;
     }
 
-    public void init(Context context, int mTopPadding, int mSpacing, BaseDataBindingAdapter adapter) {
+    public void init(Context context, int mTopPadding, int mSpacing, BaseQuickAdapter adapter) {
 
         mRecyclerView.setPadding(0, PixelUtils.dp2px(mTopPadding), 0, 0);
         mRecyclerView.setClipToPadding(false);
@@ -67,7 +71,9 @@ public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         mRecyclerView.addItemDecoration(new DividerItemBottomDecoration(mSpacing));
         mAdapter = adapter;
-        mAdapter.setEmptyView(getEmptyView());
+        if (getEmptyView() != null) {
+            mAdapter.setEmptyView(getEmptyView());
+        }
         mAdapter.isUseEmpty(false);
         mRecyclerView.setAdapter(mAdapter);
     }

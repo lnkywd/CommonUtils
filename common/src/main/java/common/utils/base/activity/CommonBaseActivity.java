@@ -1,16 +1,14 @@
 package common.utils.base.activity;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
@@ -43,43 +41,36 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
         overridePendingTransition(R.anim.slide_from_right, R.anim.keep_anim);
         setContentView(view);
         contentView = view;
-        initStatusBar(setStatusBarColor(), isShowStatusBar());
+        initStatusBar(setStatusBarColor(), isShowStatusBar(), showTopBlackFont());
     }
 
-    protected void initStatusBar(@ColorRes int color, boolean isShow) {
+    protected void initStatusBar(@ColorRes int color, boolean isShow, boolean showTopBlack) {
         if (isShow) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (color == 0 || color == R.color.app_white_bar_color) {
-                    color = topCommonColor();
-                }
                 BarUtils.setStatusBarColor(this, ContextCompat.getColor(this, color), 0);
                 contentView.setFitsSystemWindows(true);
-                if (color == topCommonColor())
+                if (showTopBlack)
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                 else {
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                 }
             } else {
-                if (color == 0) {
-                    color = R.color.app_white_bar_color;
-                }
                 BarUtils.setStatusBarColor(this, ContextCompat.getColor(this, color), 0);
                 BarUtils.addMarginTopEqualStatusBarHeight(contentView);
             }
         } else {
-            if (color == 0) {
-                color = R.color.app_white_bar_color;
-            }
+            color = R.color.transparent;
             BarUtils.setStatusBarColor(this, ContextCompat.getColor(this, color), 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && showTopBlack) {
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
     }
 
     /**
-     * 设置通用顶部颜色
-     *
-     * @return 颜色值
+     * 是否高亮（黑色）
      */
-    protected abstract int topCommonColor();
+    protected abstract boolean showTopBlackFont();
 
     @Override
     protected void onResume() {
@@ -97,19 +88,6 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
     }
 
     @Override
-    public void startActivityForResult(Intent intent, int requestCode) {
-        super.startActivityForResult(intent, requestCode);
-        overridePendingTransition(R.anim.slide_from_right, R.anim.keep_anim);
-    }
-
-    @SuppressLint("RestrictedApi")
-    @Override
-    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
-        super.startActivityForResult(intent, requestCode, options);
-        overridePendingTransition(R.anim.slide_from_right, R.anim.keep_anim);
-    }
-
-    @Override
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
@@ -117,6 +95,7 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
 
     public <T extends ViewDataBinding> T getDataBinding(int layoutId) {
         T t = DataBindingUtil.inflate(getLayoutInflater(), layoutId, null, false);
+        t.getRoot().setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return t;
     }
 

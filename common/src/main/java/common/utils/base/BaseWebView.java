@@ -37,6 +37,9 @@ public class BaseWebView extends RelativeLayout {
     private OnWebTitleChangeListener listener;
     private boolean showProgress = false;
 
+    //视频全屏相关
+    private OnVideoViewListener mOnVideoViewListener;
+
     public BaseWebView(Context context) {
         super(context);
         init();
@@ -93,6 +96,27 @@ public class BaseWebView extends RelativeLayout {
                     }
                 }
             }
+
+            //视频相关
+            @Override
+            public void onShowCustomView(View view, CustomViewCallback callback) {
+                if (mOnVideoViewListener != null) {
+                    mOnVideoViewListener.showCustomView(view, callback);
+                } else {
+                    super.onShowCustomView(view, callback);
+                }
+
+            }
+
+            @Override
+            public void onHideCustomView() {
+                if (mOnVideoViewListener != null) {
+                    mOnVideoViewListener.hide();
+                } else {
+                    super.onHideCustomView();
+                }
+            }
+
         });
         mBinding.webViewAdv.setWebViewClient(new WebViewClient() {
 
@@ -135,6 +159,10 @@ public class BaseWebView extends RelativeLayout {
     public BaseWebView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+    }
+
+    public void setOnVideoViewListener(OnVideoViewListener mOnVideoViewListener) {
+        this.mOnVideoViewListener = mOnVideoViewListener;
     }
 
     public void registerJavascriptInterfaces(Object javascriptInterface, String jsInterfaceName) {
@@ -197,6 +225,13 @@ public class BaseWebView extends RelativeLayout {
 
         void onLoadFinish();
 
+    }
+
+    public interface OnVideoViewListener {
+
+        void showCustomView(View view, WebChromeClient.CustomViewCallback callback);
+
+        void hide();
     }
 
 }

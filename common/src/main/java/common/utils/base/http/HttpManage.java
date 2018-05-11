@@ -115,10 +115,10 @@ public class HttpManage {
     }
 
     public static HttpManage getInstance(String baseUrl, boolean isDebug) {
+        mIsDebug = isDebug;
         if (mServiceManage == null) {
             mServiceManage = new HttpManage(baseUrl);
         }
-        mIsDebug = isDebug;
         return mServiceManage;
     }
 

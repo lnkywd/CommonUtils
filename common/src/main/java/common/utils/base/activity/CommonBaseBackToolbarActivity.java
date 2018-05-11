@@ -41,7 +41,7 @@ public abstract class CommonBaseBackToolbarActivity extends CommonBaseActivity {
         setContentView(baseBinding.getRoot());
         contentView = baseBinding.getRoot();
         setSupportActionBar(baseBinding.toolbar);
-        initStatusBar(setStatusBarColor(), isShowStatusBar());
+        initStatusBar(setStatusBarColor(), isShowStatusBar(), showTopBlackFont());
 
 //        baseBinding.toolbar.setNavigationIcon(R.mipmap.icon_train_register_back);
         baseBinding.barTitleShare.setVisibility(View.GONE);

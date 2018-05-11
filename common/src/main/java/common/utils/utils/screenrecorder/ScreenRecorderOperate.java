@@ -153,7 +153,7 @@ public class ScreenRecorderOperate {
             return;
         }
         new AlertDialog.Builder(mActivity.get())
-                .setMessage("Using your mic to record audio and your sd card to save video file")
+                .setMessage("获取麦克风和保存视频权限")
                 .setCancelable(false)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override

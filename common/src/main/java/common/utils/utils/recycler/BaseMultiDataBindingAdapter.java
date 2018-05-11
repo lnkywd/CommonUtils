@@ -8,7 +8,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 
 import java.util.List;
@@ -18,15 +18,14 @@ import java.util.List;
  */
 
 public abstract class BaseMultiDataBindingAdapter<T extends MultiItemEntity, Binding extends ViewDataBinding> extends
-        BaseQuickAdapter<T, BaseBindingViewHolder<Binding>> {
+        BaseMultiItemQuickAdapter<T, BaseBindingViewHolder<Binding>> {
 
+    public static final int TYPE_NOT_FOUND = -404;
+    private static final int DEFAULT_VIEW_TYPE = -0xff;
     /**
      * layouts indexed with their types
      */
     private SparseIntArray layouts;
-
-    private static final int DEFAULT_VIEW_TYPE = -0xff;
-    public static final int TYPE_NOT_FOUND = -404;
 
 
     public BaseMultiDataBindingAdapter(@Nullable List<T> data) {
@@ -42,25 +41,17 @@ public abstract class BaseMultiDataBindingAdapter<T extends MultiItemEntity, Bin
         return DEFAULT_VIEW_TYPE;
     }
 
-    protected void addItemType(int type, @LayoutRes int layoutResId) {
-        if (layouts == null) {
-            layouts = new SparseIntArray();
-        }
-        layouts.put(type, layoutResId);
-    }
-
-    private int getLayoutId(int viewType) {
-        return layouts.get(viewType, TYPE_NOT_FOUND);
-    }
-
     @Override
     protected BaseBindingViewHolder<Binding> onCreateDefViewHolder(ViewGroup parent, int viewType) {
         return createBaseViewHolder(parent, getLayoutId(viewType));
     }
 
     @Override
-    protected BaseBindingViewHolder<Binding> createBaseViewHolder(View view) {
-        return new BaseBindingViewHolder<>(view);
+    protected void addItemType(int type, @LayoutRes int layoutResId) {
+        if (layouts == null) {
+            layouts = new SparseIntArray();
+        }
+        layouts.put(type, layoutResId);
     }
 
     @Override
@@ -75,6 +66,15 @@ public abstract class BaseMultiDataBindingAdapter<T extends MultiItemEntity, Bin
         BaseBindingViewHolder<Binding> holder = new BaseBindingViewHolder<>(view);
         holder.setBinding(binding);
         return holder;
+    }
+
+    private int getLayoutId(int viewType) {
+        return layouts.get(viewType, TYPE_NOT_FOUND);
+    }
+
+    @Override
+    protected BaseBindingViewHolder<Binding> createBaseViewHolder(View view) {
+        return new BaseBindingViewHolder<>(view);
     }
 
     @Override

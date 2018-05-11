@@ -36,11 +36,16 @@ public abstract class HttpAction<T> implements Observer<T> {
         String code = null;
         String msg = null;
         if (null != t) {
-            if (!(t instanceof ApiResponseWraper)) {
+            if (t instanceof ApiResponseWraper) {
+                code = ((ApiResponseWraper) t).getCode();
+                msg = ((ApiResponseWraper) t).getMessage();
+            } else if (t instanceof ApiResponseListWraper) {
+                code = ((ApiResponseListWraper) t).getCode();
+                msg = ((ApiResponseListWraper) t).getMessage();
+            } else {
                 onHttpError(null);
+                return;
             }
-            code = ((ApiResponseWraper) t).getCode();
-            msg = ((ApiResponseWraper) t).getMessage();
             if (code == null || TextUtils.isEmpty(code) || customCodeDeal(Integer.parseInt(code))) {
                 onHttpError(null);
                 return;

@@ -12,10 +12,12 @@ import android.widget.ImageView;
  * 
  */
 public class DataImageView extends ImageView {
-	
+
 	private String absolutePath;
 
 	private Bitmap bitmap;
+
+	private boolean isVideo = false;
 
 	public DataImageView(Context context) {
 		this(context, null);
@@ -27,6 +29,14 @@ public class DataImageView extends ImageView {
 
 	public DataImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+	}
+
+	public boolean isVideo() {
+		return isVideo;
+	}
+
+	public void setVideo(boolean video) {
+		isVideo = video;
 	}
 
 	public String getAbsolutePath() {

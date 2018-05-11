@@ -7,6 +7,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -22,6 +25,7 @@ import android.widget.ScrollView;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jzvd.JZVideoPlayerStandard;
 import common.utils.R;
 
 /**
@@ -33,7 +37,7 @@ import common.utils.R;
 public class RichTextEditor extends ScrollView {
     private static final int EDIT_PADDING = 10; // edittext常规padding是10dp
     private static final int EDIT_FIRST_PADDING_TOP = 10; // 第一个EditText的paddingTop值
-
+    private static final int IMAGE_MAX = 6;//最多添加图片数量
     private int viewTagIndex = 1; // 新生的view都会打一个tag，对每个view来说，这个tag是唯一的。
     private LinearLayout allLayout; // 这个是所有子view的容器，scrollView内部的唯一一个ViewGroup
     private LayoutInflater inflater;
@@ -44,8 +48,8 @@ public class RichTextEditor extends ScrollView {
     private LayoutTransition mTransitioner; // 只在图片View添加或remove时，触发transition动画
     private int editNormalPadding = 0; //
     private int disappearingImageIndex = 0;
-    private static final int IMAGE_MAX = 6;//最多添加图片数量
     private int imgNum = 0;
+    private OnDeleteListener mOnDeleteListener;
 
     public RichTextEditor(Context context) {
         this(context, null);
@@ -118,6 +122,32 @@ public class RichTextEditor extends ScrollView {
         lastFocusEdit = firstEdit;
     }
 
+    /**
+     * 初始化transition动画
+     */
+    private void setupLayoutTransitions() {
+        mTransitioner = new LayoutTransition();
+        allLayout.setLayoutTransition(mTransitioner);
+        mTransitioner.addTransitionListener(new TransitionListener() {
+
+            @Override
+            public void startTransition(LayoutTransition transition,
+                                        ViewGroup container, View view, int transitionType) {
+
+            }
+
+            @Override
+            public void endTransition(LayoutTransition transition,
+                                      ViewGroup container, View view, int transitionType) {
+                if (!transition.isRunning()
+                        && transitionType == LayoutTransition.CHANGE_DISAPPEARING) {
+                    // transition动画结束，合并EditText
+                    // mergeEditText();
+                }
+            }
+        });
+        mTransitioner.setDuration(300);
+    }
 
     /**
      * 处理软键盘backSpace回退事件
@@ -171,6 +201,17 @@ public class RichTextEditor extends ScrollView {
     }
 
     /**
+     * dp和pixel转换
+     *
+     * @param dipValue dp值
+     * @return 像素值
+     */
+    public int dip2px(float dipValue) {
+        float m = getContext().getResources().getDisplayMetrics().density;
+        return (int) (dipValue * m + 0.5f);
+    }
+
+    /**
      * 生成文本输入框
      */
     private EditText createEditText(String hint, int paddingTop) {
@@ -181,29 +222,22 @@ public class RichTextEditor extends ScrollView {
         editText.setPadding(editNormalPadding, paddingTop, editNormalPadding, 0);
         editText.setHint(hint);
         editText.setTextSize(14);
-        editText.setHintTextColor(Color.rgb(51, 51, 51));
+        editText.setHintTextColor(ContextCompat.getColor(getContext(), R.color.color_bbbbbb));
+        editText.setTextColor(ContextCompat.getColor(getContext(), R.color.a333333));
         editText.setOnFocusChangeListener(focusListener);
         return editText;
     }
 
-    /**
-     * 生成图片View
-     */
-    private RelativeLayout createImageLayout() {
-        RelativeLayout layout = (RelativeLayout) inflater.inflate(
-                R.layout.edit_imageview, null);
-        layout.setTag(viewTagIndex++);
-        View closeView = layout.findViewById(R.id.image_close);
-        closeView.setTag(layout.getTag());
-        closeView.setOnClickListener(btnListener);
-        return layout;
+    public void setOnDeleteListener(OnDeleteListener mOnDeleteListener) {
+        this.mOnDeleteListener = mOnDeleteListener;
     }
 
-    public boolean canInsertImage(){
+    public boolean canInsertImage() {
         if (imgNum < IMAGE_MAX)
             return true;
-        else
+        else {
             return false;
+        }
     }
 
     /**
@@ -214,7 +248,7 @@ public class RichTextEditor extends ScrollView {
     public boolean insertImage(String imagePath) {
         if (imgNum < IMAGE_MAX) {
             Bitmap bmp = getScaledBitmap(imagePath, getWidth());
-            insertImage(bmp, imagePath);
+            insertImage(bmp, imagePath, "");
             imgNum++;
             return true;
         } else {
@@ -223,9 +257,25 @@ public class RichTextEditor extends ScrollView {
     }
 
     /**
+     * 根据view的宽度，动态缩放bitmap尺寸
+     *
+     * @param width view的宽度
+     */
+    private Bitmap getScaledBitmap(String filePath, int width) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+        int sampleSize = options.outWidth > width ? options.outWidth / width
+                + 1 : 1;
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = sampleSize;
+        return BitmapFactory.decodeFile(filePath, options);
+    }
+
+    /**
      * 插入一张图片
      */
-    private void insertImage(Bitmap bitmap, String imagePath) {
+    public void insertImage(Bitmap bitmap, String imagePath, String videoPath) {
         String lastEditStr = lastFocusEdit.getText().toString();
         int cursorIndex = lastFocusEdit.getSelectionStart();
         String editStr1 = lastEditStr.substring(0, cursorIndex).trim();
@@ -233,7 +283,7 @@ public class RichTextEditor extends ScrollView {
 
         if (lastEditStr.length() == 0 || editStr1.length() == 0) {
             // 如果EditText为空，或者光标已经顶在了editText的最前面，则直接插入图片，并且EditText下移即可
-            addImageViewAtIndex(lastEditIndex, bitmap, imagePath);
+            addImageViewAtIndex(lastEditIndex, bitmap, imagePath, videoPath);
         } else {
             // 如果EditText非空且光标不在最顶端，则需要添加新的imageView和EditText
             lastFocusEdit.setText(editStr1);
@@ -243,7 +293,7 @@ public class RichTextEditor extends ScrollView {
                 addEditTextAtIndex(lastEditIndex + 1, editStr2);
             }
 
-            addImageViewAtIndex(lastEditIndex + 1, bitmap, imagePath);
+            addImageViewAtIndex(lastEditIndex + 1, bitmap, imagePath, videoPath);
             lastFocusEdit.requestFocus();
             lastFocusEdit.setSelection(editStr1.length(), editStr1.length());
         }
@@ -251,12 +301,41 @@ public class RichTextEditor extends ScrollView {
     }
 
     /**
-     * 隐藏小键盘
+     * 在特定位置添加ImageView
      */
-    public void hideKeyBoard() {
-        InputMethodManager imm = (InputMethodManager) getContext()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(lastFocusEdit.getWindowToken(), 0);
+    private void addImageViewAtIndex(final int index, Bitmap bmp,
+                                     String imagePath, final String videoPath) {
+        final RelativeLayout imageLayout = createImageLayout(!TextUtils.isEmpty(videoPath));
+        DataImageView imageView = (DataImageView) imageLayout
+                .findViewById(R.id.edit_imageView);
+        imageView.setImageBitmap(bmp);
+        imageView.setBitmap(bmp);
+        if (!TextUtils.isEmpty(videoPath)) {
+            imageLayout.findViewById(R.id.play).setVisibility(View.VISIBLE);
+            imageLayout.findViewById(R.id.layout).setOnClickListener(new ViewClick() {
+                @Override
+                public void onViewClick(View view) {
+                    JZVideoPlayerStandard.startFullscreen(getContext(), JZVideoPlayerStandard.class, videoPath);
+                }
+            });
+            imageView.setVideo(true);
+            imagePath = videoPath;
+        }
+        imageView.setAbsolutePath(imagePath);
+        imageView.setPadding(30, 30, 30, 30);
+        // 调整imageView的高度
+        int imageHeight = getWidth() * bmp.getHeight() / bmp.getWidth();
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, imageHeight);
+        imageView.setLayoutParams(lp);
+
+        // onActivityResult无法触发动画，此处post处理
+        allLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                allLayout.addView(imageLayout, index);
+            }
+        }, 200);
     }
 
     /**
@@ -277,73 +356,37 @@ public class RichTextEditor extends ScrollView {
     }
 
     /**
-     * 在特定位置添加ImageView
+     * 生成图片View
      */
-    private void addImageViewAtIndex(final int index, Bitmap bmp,
-                                     String imagePath) {
-        final RelativeLayout imageLayout = createImageLayout();
-        DataImageView imageView = (DataImageView) imageLayout
-                .findViewById(R.id.edit_imageView);
-        imageView.setImageBitmap(bmp);
-        imageView.setBitmap(bmp);
-        imageView.setAbsolutePath(imagePath);
-        imageView.setPadding(30,30,30,30);
-        // 调整imageView的高度
-        int imageHeight = getWidth() * bmp.getHeight() / bmp.getWidth();
-        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, imageHeight);
-        imageView.setLayoutParams(lp);
-
-        // onActivityResult无法触发动画，此处post处理
-        allLayout.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                allLayout.addView(imageLayout, index);
-            }
-        }, 200);
-    }
-
-    /**
-     * 根据view的宽度，动态缩放bitmap尺寸
-     *
-     * @param width view的宽度
-     */
-    private Bitmap getScaledBitmap(String filePath, int width) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filePath, options);
-        int sampleSize = options.outWidth > width ? options.outWidth / width
-                + 1 : 1;
-        options.inJustDecodeBounds = false;
-        options.inSampleSize = sampleSize;
-        return BitmapFactory.decodeFile(filePath, options);
-    }
-
-    /**
-     * 初始化transition动画
-     */
-    private void setupLayoutTransitions() {
-        mTransitioner = new LayoutTransition();
-        allLayout.setLayoutTransition(mTransitioner);
-        mTransitioner.addTransitionListener(new TransitionListener() {
-
-            @Override
-            public void startTransition(LayoutTransition transition,
-                                        ViewGroup container, View view, int transitionType) {
-
-            }
-
-            @Override
-            public void endTransition(LayoutTransition transition,
-                                      ViewGroup container, View view, int transitionType) {
-                if (!transition.isRunning()
-                        && transitionType == LayoutTransition.CHANGE_DISAPPEARING) {
-                    // transition动画结束，合并EditText
-                    // mergeEditText();
+    private RelativeLayout createImageLayout(boolean isVideo) {
+        final RelativeLayout layout = (RelativeLayout) inflater.inflate(
+                R.layout.edit_imageview, null);
+        layout.setTag(viewTagIndex++);
+        View closeView = layout.findViewById(R.id.image_close);
+        closeView.setTag(layout.getTag());
+        if (isVideo) {
+            closeView.setOnClickListener(new ViewClick() {
+                @Override
+                public void onViewClick(View view) {
+                    onImageCloseClick(layout);
+                    if (mOnDeleteListener != null) {
+                        mOnDeleteListener.delete();
+                    }
                 }
-            }
-        });
-        mTransitioner.setDuration(300);
+            });
+        } else {
+            closeView.setOnClickListener(btnListener);
+        }
+        return layout;
+    }
+
+    /**
+     * 隐藏小键盘
+     */
+    public void hideKeyBoard() {
+        InputMethodManager imm = (InputMethodManager) getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(lastFocusEdit.getWindowToken(), 0);
     }
 
     /**
@@ -376,17 +419,6 @@ public class RichTextEditor extends ScrollView {
     }
 
     /**
-     * dp和pixel转换
-     *
-     * @param dipValue dp值
-     * @return 像素值
-     */
-    public int dip2px(float dipValue) {
-        float m = getContext().getResources().getDisplayMetrics().density;
-        return (int) (dipValue * m + 0.5f);
-    }
-
-    /**
      * 对外提供的接口, 生成编辑数据上传
      */
     public List<EditData> buildEditData() {
@@ -403,6 +435,7 @@ public class RichTextEditor extends ScrollView {
                         .findViewById(R.id.edit_imageView);
                 itemData.setImagePath(item.getAbsolutePath());
                 itemData.setBitmap(item.getBitmap());
+                itemData.setVideo(item.isVideo());
             }
             dataList.add(itemData);
         }
@@ -410,29 +443,42 @@ public class RichTextEditor extends ScrollView {
         return dataList;
     }
 
+    public interface OnDeleteListener {
+        void delete();
+    }
+
     public class EditData {
         String inputStr;
         String imagePath;
         Bitmap bitmap = null;
+        boolean isVideo = false;
+
+        public boolean isVideo() {
+            return isVideo;
+        }
+
+        public void setVideo(boolean video) {
+            isVideo = video;
+        }
 
         public Bitmap getBitmap() {
             return bitmap;
-        }
-
-        public String getImagePath() {
-            return imagePath;
-        }
-
-        public String getInputStr() {
-            return inputStr;
         }
 
         public void setBitmap(Bitmap bitmap) {
             this.bitmap = bitmap;
         }
 
+        public String getImagePath() {
+            return imagePath;
+        }
+
         public void setImagePath(String imagePath) {
             this.imagePath = imagePath;
+        }
+
+        public String getInputStr() {
+            return inputStr;
         }
 
         public void setInputStr(String inputStr) {
