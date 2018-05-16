@@ -52,12 +52,10 @@ import java.util.List;
  */
 public final class Utils {
 
-    @SuppressLint("StaticFieldLeak")
-    private static Application sApplication;
-
     static WeakReference<Activity> sTopActivityWeakRef;
     static List<Activity> sActivityList = new LinkedList<>();
-
+    @SuppressLint("StaticFieldLeak")
+    private static Application sApplication;
     private static Application.ActivityLifecycleCallbacks mCallbacks = new Application.ActivityLifecycleCallbacks() {
         @Override
         public void onActivityCreated(Activity activity, Bundle bundle) {
@@ -166,6 +164,19 @@ public final class Utils {
         for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
             if (appProcess.processName.startsWith(packageName)
                     && appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isDefaultProcess(Context context) {
+        ActivityManager am = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE));
+        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+        String mainProcessName = context.getPackageName();
+        int myPid = android.os.Process.myPid();
+        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
+            if (info.pid == myPid && mainProcessName.equals(info.processName)) {
                 return true;
             }
         }

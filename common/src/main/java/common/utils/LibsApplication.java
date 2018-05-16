@@ -7,10 +7,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.multidex.MultiDex;
 
+import com.liulishuo.filedownloader.FileDownloader;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.List;
 
+import cn.dreamtobe.filedownloader.OkHttp3Connection;
 import common.utils.utils.CrashUtils;
 import common.utils.utils.LogUtils;
 import common.utils.utils.Utils;
@@ -84,6 +86,10 @@ public class LibsApplication extends Application {
             initLog();
             CrashUtils.init();
             registerActivityLifecycleCallbacks(mCallbacks);
+            // 文件下载使用 okhttp
+            FileDownloader.setupOnApplicationOnCreate(this)
+                    .connectionCreator(new OkHttp3Connection.Creator())
+                    .commit();
         }
     }
 

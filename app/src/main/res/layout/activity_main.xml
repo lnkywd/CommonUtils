@@ -11,11 +11,19 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/btn01"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:onClick="click"
             android:text="测试" />
+
+        <Button
+            android:id="@+id/btn02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="click"
+            android:text="下载apk" />
 
     </LinearLayout>
 </layout>

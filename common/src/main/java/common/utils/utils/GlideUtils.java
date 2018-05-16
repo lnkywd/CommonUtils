@@ -18,8 +18,11 @@ public class GlideUtils {
     private static int commonDefault = 0;
     private static int headDefault = 0;
 
-    public GlideUtils(int commonDefault, int headDefault) {
+    public static void setCommonDefault(int commonDefault) {
         GlideUtils.commonDefault = commonDefault;
+    }
+
+    public static void setHeadDefault(int headDefault) {
         GlideUtils.headDefault = headDefault;
     }
 

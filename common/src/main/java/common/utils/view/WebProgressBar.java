@@ -47,7 +47,7 @@ public class WebProgressBar extends View {
 
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(ContextCompat.getColor(getContext(), R.color.a4b94ee));
+        mPaint.setColor(ContextCompat.getColor(getContext(), R.color.black));
     }
 
     public void setOnEndListener(OnEndListener listener) {

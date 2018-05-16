@@ -7,6 +7,7 @@ import android.view.View;
 
 import common.utils.base.activity.CommonBaseActivity;
 import common.utils.databinding.ActivityMainBinding;
+import common.utils.utils.apkdownload.UpdateAppUtils;
 
 /**
  * @author wd
@@ -25,11 +26,25 @@ public class MainActivity extends CommonBaseActivity {
     }
 
     public void click(View view) {
-        Rect rect = new Rect();
-        view.getGlobalVisibleRect(rect);
+        switch (view.getId()) {
+            case R.id.btn01:
+                Rect rect = new Rect();
+                view.getGlobalVisibleRect(rect);
 
-        TestActivity.launch(this, rect);
-        overridePendingTransition(0, 0);
+                TestActivity.launch(this, rect);
+                overridePendingTransition(0, 0);
+                break;
+            case R.id.btn02:
+                UpdateAppUtils.from(this)
+                        .serverVersionName("2.0.0")
+                        .checkBy(UpdateAppUtils.CHECK_BY_OUT)
+                        .isForce(true)
+                        .apkPath("http://imtt.dd.qq.com/16891/AA179694CC535CE01320B7963446FEED.apk?fsname=com.qiyi.video_9.5.0_81070.apk&csr=1bbd")
+                        .update();
+
+                break;
+            default:
+        }
     }
 
     @Override

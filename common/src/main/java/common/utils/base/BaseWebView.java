@@ -35,7 +35,7 @@ public class BaseWebView extends RelativeLayout {
 
     private LayoutBaseWebviewBinding mBinding;
     private OnWebTitleChangeListener listener;
-    private boolean showProgress = false;
+    private boolean showProgress = true;
 
     //视频全屏相关
     private OnVideoViewListener mOnVideoViewListener;
@@ -159,6 +159,10 @@ public class BaseWebView extends RelativeLayout {
     public BaseWebView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+    }
+
+    public void setLoadingColor(int color) {
+        mBinding.webProgress.setColor(color);
     }
 
     public void setOnVideoViewListener(OnVideoViewListener mOnVideoViewListener) {

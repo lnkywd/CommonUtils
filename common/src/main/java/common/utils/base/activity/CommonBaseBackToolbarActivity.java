@@ -15,7 +15,7 @@ import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrConfig;
 
 import common.utils.R;
-import common.utils.databinding.ActivityBaseBackBinding;
+import common.utils.databinding.ActivityCommonBaseBackToolbarBinding;
 import common.utils.view.ViewClick;
 
 
@@ -24,7 +24,8 @@ import common.utils.view.ViewClick;
  */
 
 public abstract class CommonBaseBackToolbarActivity extends CommonBaseActivity {
-    protected ActivityBaseBackBinding baseBinding;
+
+    protected ActivityCommonBaseBackToolbarBinding baseBinding;
 
     @Override
     protected void setLayout(View view) {
@@ -37,7 +38,7 @@ public abstract class CommonBaseBackToolbarActivity extends CommonBaseActivity {
         if (addSlidr()) {
             Slidr.attach(this, mBuilder.build());
         }
-        baseBinding = getDataBinding(R.layout.activity_base_back);
+        baseBinding = getDataBinding(R.layout.activity_common_base_back_toolbar);
         setContentView(baseBinding.getRoot());
         contentView = baseBinding.getRoot();
         setSupportActionBar(baseBinding.toolbar);

@@ -22,7 +22,6 @@ import okhttp3.Response;
 import okhttp3.internal.platform.Platform;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static okhttp3.internal.platform.Platform.INFO;
 
@@ -66,6 +65,7 @@ public class HttpManage {
             }
         }
     };
+    private static Interceptor mHeaderInterceptor;
     private static HttpManage mServiceManage;
     private static boolean mIsDebug;
     private Retrofit retrofit;
@@ -97,12 +97,15 @@ public class HttpManage {
 
         Cache mCache = new Cache(files, cacheSize);
         OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
-        builder.readTimeout(10, TimeUnit.SECONDS);
-        builder.connectTimeout(10, TimeUnit.SECONDS);
+        builder.readTimeout(30, TimeUnit.SECONDS);
+        builder.connectTimeout(30, TimeUnit.SECONDS);
         builder.cache(mCache);
         builder.addNetworkInterceptor(sRewriteCacheControlInterceptor);
         if (mIsDebug) {
             builder.addInterceptor(httpLoggingInterceptor);
+        }
+        if (mHeaderInterceptor != null) {
+            builder.addInterceptor(mHeaderInterceptor);
         }
 
         OkHttpClient client = builder.build();
@@ -115,7 +118,12 @@ public class HttpManage {
     }
 
     public static HttpManage getInstance(String baseUrl, boolean isDebug) {
+        return getInstance(baseUrl, isDebug, null);
+    }
+
+    public static HttpManage getInstance(String baseUrl, boolean isDebug, Interceptor headerInterceptor) {
         mIsDebug = isDebug;
+        mHeaderInterceptor = headerInterceptor;
         if (mServiceManage == null) {
             mServiceManage = new HttpManage(baseUrl);
         }
