@@ -24,7 +24,10 @@
             android:name=".JumpActivity1"
             android:exported="false"
             android:screenOrientation="portrait" />
-        <activity android:name=".Test5Activity" />
+        <activity
+            android:name=".Test5Activity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait" />
 
     </application>
 

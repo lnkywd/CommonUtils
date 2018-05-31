@@ -1,24 +1,25 @@
 package common.utils.base;
 
-import android.app.Activity;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.net.http.SslError;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+
+import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
+import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
+import com.tencent.smtt.export.external.interfaces.WebResourceError;
+import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
+import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebSettings;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 
 import common.utils.R;
 import common.utils.databinding.LayoutBaseWebviewBinding;
@@ -29,6 +30,9 @@ import common.utils.view.WebProgressBar;
 
 /**
  * Created by wd on 2017/7/18.
+ * 需要视频播放的，在 manifests 中的 activity 上加
+ * android:configChanges="orientation|screenSize|keyboardHidden"
+ * 在 activity 的 onCreate 中加 getWindow().setFormat(PixelFormat.TRANSLUCENT);
  */
 
 public class BaseWebView extends RelativeLayout {
@@ -67,25 +71,54 @@ public class BaseWebView extends RelativeLayout {
                 mBinding.webViewAdv.loadUrl(mUrl);
             }
         });
-        WebSettings settings = mBinding.webViewAdv.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setDisplayZoomControls(false);
-        settings.setBuiltInZoomControls(true);
-        settings.setDomStorageEnabled(true);
-        settings.setAllowFileAccess(true);
+        WebSettings webSetting = mBinding.webViewAdv.getSettings();
+        webSetting.setJavaScriptEnabled(true);
+        webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSetting.setDisplayZoomControls(false);
+        webSetting.setBuiltInZoomControls(true);
+        webSetting.setDomStorageEnabled(true);
+        webSetting.setAllowFileAccess(true);
+        webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        webSetting.setSupportZoom(true);
         // 是否支持viewport属性，默认值 false
         // 页面通过`<meta name="viewport" ... />`自适应手机屏幕
         // 当值为true且viewport标签不存在或未指定宽度时使用 wide viewport mode
-        settings.setUseWideViewPort(true);
+        webSetting.setUseWideViewPort(true);
         // 是否使用overview mode加载页面，默认值 false
         // 当页面宽度大于WebView宽度时，缩小使页面宽度等于WebView宽度
 //        settings.setLoadWithOverviewMode(true);
         if (Build.VERSION.SDK_INT >= 21) {
-            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+            webSetting.setMixedContentMode(0);
         }
+        webSetting.setSupportMultipleWindows(true);
+        webSetting.setAppCacheEnabled(true);
+        // webSetting.setDatabaseEnabled(true);
+        webSetting.setGeolocationEnabled(true);
+        webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
+        // webSetting.setPageCacheCapacity(IX5WebSettings.DEFAULT_CACHE_CAPACITY);
+        webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
+        // webSetting.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        webSetting.setCacheMode(WebSettings.LOAD_NO_CACHE);
         mBinding.webViewAdv.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
         mBinding.webViewAdv.setBackgroundColor(0);//设置背景透明
+
+
         mBinding.webViewAdv.setWebChromeClient(new WebChromeClient() {
+
+            View myVideoView;
+            View myNormalView;
+
+            @Override
+            public void onHideCustomView() {
+                if (mOnVideoViewListener != null) {
+                    mOnVideoViewListener.hide();
+                }
+                if (myVideoView != null) {
+                    ViewGroup viewGroup = (ViewGroup) myVideoView.getParent();
+                    viewGroup.removeView(myVideoView);
+                    viewGroup.addView(myNormalView);
+                }
+            }
 
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
@@ -113,23 +146,17 @@ public class BaseWebView extends RelativeLayout {
                 }
             }
 
-            //视频相关
             @Override
-            public void onShowCustomView(View view, CustomViewCallback callback) {
-                if (mOnVideoViewListener != null) {
-                    mOnVideoViewListener.showCustomView(view, callback);
-                } else {
-                    super.onShowCustomView(view, callback);
-                }
+            public void onShowCustomView(View view, IX5WebChromeClient.CustomViewCallback customViewCallback) {
+                FrameLayout normalView = findViewById(R.id.web_view_adv);
+                ViewGroup viewGroup = (ViewGroup) normalView.getParent();
+                viewGroup.removeView(normalView);
+                viewGroup.addView(view);
+                myVideoView = view;
+                myNormalView = normalView;
 
-            }
-
-            @Override
-            public void onHideCustomView() {
                 if (mOnVideoViewListener != null) {
-                    mOnVideoViewListener.hide();
-                } else {
-                    super.onHideCustomView();
+                    mOnVideoViewListener.showCustomView(view, customViewCallback);
                 }
             }
 
@@ -140,7 +167,6 @@ public class BaseWebView extends RelativeLayout {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 mUrl = url;
-                LogUtils.i("wdwdwd", "utl===" + mUrl);
                 return true;
             }
 
@@ -175,10 +201,11 @@ public class BaseWebView extends RelativeLayout {
             }
 
             @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-                view.reload();
+            public void onReceivedSslError(WebView webView, SslErrorHandler sslErrorHandler, com.tencent.smtt.export.external.interfaces.SslError sslError) {
+                sslErrorHandler.proceed();
+                webView.reload();
             }
+
         });
     }
 
@@ -230,26 +257,27 @@ public class BaseWebView extends RelativeLayout {
     }
 
     public void onPause() {
-        if (getContext() instanceof Activity) {
-            if (((Activity) getContext()).isFinishing()) {
-                mBinding.webViewAdv.pauseTimers();
-                mBinding.webViewAdv.loadUrl("about:blank");
-            }
-        }
-        mBinding.webViewAdv.onPause();
+//        if (getContext() instanceof Activity) {
+//            if (((Activity) getContext()).isFinishing()) {
+//                mBinding.webViewAdv.pauseTimers();
+//                mBinding.webViewAdv.loadUrl("about:blank");
+//            }
+//        }
+//        mBinding.webViewAdv.onPause();
     }
 
+    //
     public void onResume() {
-        mBinding.webViewAdv.resumeTimers();
-        mBinding.webViewAdv.onResume();
+//        mBinding.webViewAdv.resumeTimers();
+//        mBinding.webViewAdv.onResume();
     }
 
     public void onDestroy() {
-        mBinding.webViewAdv.setWebViewClient(null);
-        mBinding.webViewAdv.setWebChromeClient(null);
-        mBinding.webViewAdv.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
-        mBinding.webViewAdv.clearHistory();
-        ((ViewGroup) mBinding.webViewAdv.getParent()).removeView(mBinding.webViewAdv);
+//        mBinding.webViewAdv.setWebViewClient(null);
+//        mBinding.webViewAdv.setWebChromeClient(null);
+//        mBinding.webViewAdv.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+//        mBinding.webViewAdv.clearHistory();
+//        ((ViewGroup) mBinding.webViewAdv.getParent()).removeView(mBinding.webViewAdv);
         mBinding.webViewAdv.destroy();
     }
 
@@ -271,7 +299,7 @@ public class BaseWebView extends RelativeLayout {
 
     public interface OnVideoViewListener {
 
-        void showCustomView(View view, WebChromeClient.CustomViewCallback callback);
+        void showCustomView(View view, IX5WebChromeClient.CustomViewCallback callback);
 
         void hide();
     }

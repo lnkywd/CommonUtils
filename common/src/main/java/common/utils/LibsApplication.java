@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.multidex.MultiDex;
 
 import com.liulishuo.filedownloader.FileDownloader;
+import com.tencent.smtt.sdk.QbSdk;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.List;
@@ -90,6 +91,7 @@ public class LibsApplication extends Application {
             FileDownloader.setupOnApplicationOnCreate(this)
                     .connectionCreator(new OkHttp3Connection.Creator())
                     .commit();
+            initX5();
         }
     }
 
@@ -122,6 +124,25 @@ public class LibsApplication extends Application {
                 .setFileFilter(LogUtils.V)// log文件过滤器，和logcat过滤器同理，默认Verbose
                 .setStackDeep(1);// log栈深度，默认为1
         LogUtils.d(config.toString());
+    }
+
+    private void initX5() {
+        QbSdk.PreInitCallback cb = new QbSdk.PreInitCallback() {
+
+            @Override
+            public void onCoreInitFinished() {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onViewInitFinished(boolean arg0) {
+                // TODO Auto-generated method stub
+                //x5內核初始化完成的回调，为true表示x5内核加载成功，否则表示x5内核加载失败，会自动切换到系统内核。
+                LogUtils.d(TAG, " onViewInitFinished is " + arg0);
+            }
+        };
+        //x5内核初始化接口
+        QbSdk.initX5Environment(getApplicationContext(), cb);
     }
 
     protected boolean isDebug() {

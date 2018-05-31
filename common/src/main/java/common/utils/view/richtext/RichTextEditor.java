@@ -310,8 +310,8 @@ public class RichTextEditor extends ScrollView {
     private void addImageViewAtIndex(final int index, Bitmap bmp,
                                      String imagePath, final String videoPath) {
         final RelativeLayout imageLayout = createImageLayout(!TextUtils.isEmpty(videoPath));
-        DataImageView imageView = (DataImageView) imageLayout
-                .findViewById(R.id.edit_imageView);
+        DataImageView imageView = imageLayout
+                .findViewById(R.id.iv);
         imageView.setImageBitmap(bmp);
         imageView.setBitmap(bmp);
         if (!TextUtils.isEmpty(videoPath)) {
@@ -435,8 +435,8 @@ public class RichTextEditor extends ScrollView {
                 EditText item = (EditText) itemView;
                 itemData.setInputStr(item.getText().toString());
             } else if (itemView instanceof RelativeLayout) {
-                DataImageView item = (DataImageView) itemView
-                        .findViewById(R.id.edit_imageView);
+                DataImageView item = itemView
+                        .findViewById(R.id.iv);
                 itemData.setImagePath(item.getAbsolutePath());
                 itemData.setBitmap(item.getBitmap());
                 itemData.setVideo(item.isVideo());
