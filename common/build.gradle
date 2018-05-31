@@ -95,6 +95,12 @@ dependencies {
     }
     compile 'com.liulishuo.filedownloader:library:1.7.3'
     // FileDownloader end  https://github.com/lingochamp/FileDownloader
+
+    /**
+     *下面的依赖包都只是包含，如果调用层没有使用，不需要编译依赖，那么打包时将不会包含进去，并不会增加 APK 的大小
+     */
+    // greendao 数据库
+    provided 'org.greenrobot:greendao:3.2.2'
 }
 
 apply from: 'bintray.gradle'

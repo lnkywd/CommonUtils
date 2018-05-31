@@ -30,7 +30,6 @@ public abstract class CommonBaseBackActivity extends CommonBaseActivity {
         if (addSlidr()) {
             Slidr.attach(this, mBuilder.build());
         }
-        setTheme(R.style.MainBackTheme);
         overridePendingTransition(R.anim.slide_from_right, R.anim.keep_anim);
         mBinding = getDataBinding(R.layout.activity_common_base_back);
         contentView = mBinding.getRoot();

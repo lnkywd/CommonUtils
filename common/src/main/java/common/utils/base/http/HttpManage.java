@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import common.utils.utils.LogUtils;
@@ -65,12 +66,15 @@ public class HttpManage {
             }
         }
     };
-    private static Interceptor mHeaderInterceptor;
     private static HttpManage mServiceManage;
     private static boolean mIsDebug;
     private Retrofit retrofit;
 
     private HttpManage(String baseUrl) {
+        this(baseUrl, null);
+    }
+
+    private HttpManage(String baseUrl, final Map<String, String> headers) {
         //缓存目录
         File files = new File(Environment.getDownloadCacheDirectory().toString(), "cache");
         //缓存大小为10M
@@ -104,8 +108,18 @@ public class HttpManage {
         if (mIsDebug) {
             builder.addInterceptor(httpLoggingInterceptor);
         }
-        if (mHeaderInterceptor != null) {
-            builder.addInterceptor(mHeaderInterceptor);
+        if (headers != null) {
+            builder.addInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Request request = chain.request();
+                    Request.Builder requestBuilder = request.newBuilder();
+                    for (Map.Entry<String, String> entry : headers.entrySet()) {
+                        requestBuilder.addHeader(entry.getKey(), entry.getValue());
+                    }
+                    return chain.proceed(requestBuilder.build());
+                }
+            });
         }
 
         OkHttpClient client = builder.build();
@@ -121,11 +135,10 @@ public class HttpManage {
         return getInstance(baseUrl, isDebug, null);
     }
 
-    public static HttpManage getInstance(String baseUrl, boolean isDebug, Interceptor headerInterceptor) {
+    public static HttpManage getInstance(String baseUrl, boolean isDebug, Map<String, String> headers) {
         mIsDebug = isDebug;
-        mHeaderInterceptor = headerInterceptor;
         if (mServiceManage == null) {
-            mServiceManage = new HttpManage(baseUrl);
+            mServiceManage = new HttpManage(baseUrl, headers);
         }
         return mServiceManage;
     }

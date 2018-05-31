@@ -21,11 +21,12 @@ import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.os.Build;
 import android.os.Looper;
-import android.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
+
+import common.utils.utils.LogUtils;
 
 /**
  * @author yrom
@@ -81,7 +82,7 @@ abstract class BaseEncoder implements Encoder {
             throw new IllegalStateException("prepared!");
         }
         MediaFormat format = createMediaFormat();
-        Log.d("Encoder", "Create media format: " + format);
+        LogUtils.d("Encoder", "Create media format: " + format);
 
         String mimeType = format.getString(MediaFormat.KEY_MIME);
         final MediaCodec encoder = createEncoder(mimeType);
@@ -93,7 +94,7 @@ abstract class BaseEncoder implements Encoder {
             onEncoderConfigured(encoder);
             encoder.start();
         } catch (MediaCodec.CodecException e) {
-            Log.e("Encoder", "Configure codec failure!\n  with format" + format, e);
+            LogUtils.e("Encoder", "Configure codec failure!\n  with format" + format, e);
             throw e;
         }
         mEncoder = encoder;
@@ -114,7 +115,7 @@ abstract class BaseEncoder implements Encoder {
                 return MediaCodec.createByCodecName(mCodecName);
             }
         } catch (IOException e) {
-            Log.w("@@", "Create MediaCodec by name '" + mCodecName + "' failure!", e);
+            LogUtils.w("@@", "Create MediaCodec by name '" + mCodecName + "' failure!", e);
         }
         return MediaCodec.createEncoderByType(type);
     }

@@ -8,12 +8,13 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -21,7 +22,8 @@ import android.widget.RelativeLayout;
 
 import common.utils.R;
 import common.utils.databinding.LayoutBaseWebviewBinding;
-import common.utils.utils.ToastUtils;
+import common.utils.utils.LogUtils;
+import common.utils.view.ViewClick;
 import common.utils.view.WebProgressBar;
 
 
@@ -36,6 +38,8 @@ public class BaseWebView extends RelativeLayout {
     private LayoutBaseWebviewBinding mBinding;
     private OnWebTitleChangeListener listener;
     private boolean showProgress = true;
+    private boolean isLoadError = false;
+    private String mUrl = "";
 
     //视频全屏相关
     private OnVideoViewListener mOnVideoViewListener;
@@ -52,6 +56,15 @@ public class BaseWebView extends RelativeLayout {
             @Override
             public void onEnd() {
                 mBinding.webProgress.setVisibility(View.GONE);
+            }
+        });
+        mBinding.empty.setOnClickListener(new ViewClick() {
+            @Override
+            public void onViewClick(View view) {
+                isLoadError = false;
+                mBinding.webViewAdv.setVisibility(View.VISIBLE);
+                mBinding.empty.setVisibility(View.GONE);
+                mBinding.webViewAdv.loadUrl(mUrl);
             }
         });
         WebSettings settings = mBinding.webViewAdv.getSettings();
@@ -77,7 +90,7 @@ public class BaseWebView extends RelativeLayout {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                Log.d(TAG, "onProgressChanged: " + newProgress);
+                LogUtils.d(TAG, "onProgressChanged: " + newProgress);
                 mBinding.webProgress.setNormalProgress(newProgress);
                 if (newProgress == 100) {
                     if (listener != null) {
@@ -94,6 +107,9 @@ public class BaseWebView extends RelativeLayout {
                     if (listener != null) {
                         listener.changeTitle(title);
                     }
+                }
+                if (!TextUtils.isEmpty(title) && title.toLowerCase().contains("error")) {
+                    isLoadError = true;
                 }
             }
 
@@ -123,6 +139,8 @@ public class BaseWebView extends RelativeLayout {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
+                mUrl = url;
+                LogUtils.i("wdwdwd", "utl===" + mUrl);
                 return true;
             }
 
@@ -136,11 +154,24 @@ public class BaseWebView extends RelativeLayout {
             }
 
             @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                if (isLoadError) {
+                    errorDeal();
+                }
+            }
+
+            @Override
             public void onReceivedError(WebView view, int errorCode,
                                         String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
-                mBinding.webViewAdv.setVisibility(View.GONE);
-                ToastUtils.showShort("加载失败");
+                isLoadError = true;
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                isLoadError = true;
             }
 
             @Override
@@ -149,6 +180,11 @@ public class BaseWebView extends RelativeLayout {
                 view.reload();
             }
         });
+    }
+
+    private void errorDeal() {
+        mBinding.webViewAdv.setVisibility(View.GONE);
+        mBinding.empty.setVisibility(View.VISIBLE);
     }
 
     public BaseWebView(Context context, AttributeSet attrs) {
@@ -187,6 +223,8 @@ public class BaseWebView extends RelativeLayout {
 
     public void setUrl(String url) {
         if (mBinding != null) {
+            LogUtils.i(TAG, url);
+            mUrl = url;
             mBinding.webViewAdv.loadUrl(url);
         }
     }

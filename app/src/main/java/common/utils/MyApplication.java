@@ -5,6 +5,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
+import com.alibaba.android.arouter.launcher.ARouter;
+
+import common.utils.db.DbHelper;
+
 /**
  * @author wd
  * @date 2018/04/26
@@ -18,6 +22,17 @@ public class MyApplication extends LibsApplication {
     public void onCreate() {
         super.onCreate();
         createNotification();
+        DbHelper.getInstance().init(this);
+        if (isDebug()) {           // 这两行必须写在init之前，否则这些配置在init过程中将无效
+            ARouter.openLog();     // 打印日志
+            ARouter.openDebug();   // 开启调试模式(如果在InstantRun模式下运行，必须开启调试模式！线上版本需要关闭,否则有安全风险)
+        }
+        ARouter.init(this); // 尽可能早，推荐在Application中初始化
+    }
+
+    @Override
+    protected boolean isDebug() {
+        return BuildConfig.DEBUG;
     }
 
     /**

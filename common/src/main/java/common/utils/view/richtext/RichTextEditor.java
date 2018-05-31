@@ -1,4 +1,4 @@
-package common.utils.view;
+package common.utils.view.richtext;
 
 import android.animation.LayoutTransition;
 import android.animation.LayoutTransition.TransitionListener;
@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,8 @@ import java.util.List;
 
 import cn.jzvd.JZVideoPlayerStandard;
 import common.utils.R;
+import common.utils.utils.PixelUtils;
+import common.utils.view.ViewClick;
 
 /**
  * 这是一个富文本编辑器，给外部提供insertImage接口，添加的图片跟当前光标所在位置有关
@@ -214,14 +217,15 @@ public class RichTextEditor extends ScrollView {
     /**
      * 生成文本输入框
      */
-    private EditText createEditText(String hint, int paddingTop) {
-        EditText editText = (EditText) inflater.inflate(R.layout.edit_item1,
-                null);
+    private DeletableEditText createEditText(String hint, int paddingTop) {
+        DeletableEditText editText = new DeletableEditText(getContext());
+        editText.setBackgroundColor(Color.TRANSPARENT);
+        editText.setLineSpacing(PixelUtils.dp2px(10), 1);
         editText.setOnKeyListener(keyListener);
         editText.setTag(viewTagIndex++);
         editText.setPadding(editNormalPadding, paddingTop, editNormalPadding, 0);
         editText.setHint(hint);
-        editText.setTextSize(14);
+        editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         editText.setHintTextColor(ContextCompat.getColor(getContext(), R.color.color_bbbbbb));
         editText.setTextColor(ContextCompat.getColor(getContext(), R.color.a333333));
         editText.setOnFocusChangeListener(focusListener);

@@ -25,5 +25,41 @@
             android:onClick="click"
             android:text="下载apk" />
 
+        <Button
+            android:id="@+id/btn03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="click"
+            android:text="aouter 跳转 jump1" />
+
+        <Button
+            android:id="@+id/btn04"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="click"
+            android:text="正常跳转 jump1" />
+
+        <Button
+            android:id="@+id/btn05"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="click"
+            android:text="富文本 webView" />
+
+        <Button
+            android:id="@+id/btn06"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="click"
+            android:text="greendao保存数据" />
+
+        <Button
+            android:id="@+id/btn07"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="click"
+            android:text="greendao读取数据" />
+
+
     </LinearLayout>
 </layout>

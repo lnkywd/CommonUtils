@@ -1,6 +1,7 @@
 package common.utils.base.http;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonWriter;
@@ -12,6 +13,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
+import common.utils.utils.GsonUtils;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -39,7 +41,9 @@ public final class GsonConverterFactory extends Converter.Factory {
      * decoding from JSON (when no charset is specified by a header) will use UTF-8.
      */
     public static GsonConverterFactory create() {
-        return create(new Gson());
+        return create(new GsonBuilder()
+                .registerTypeAdapterFactory(new GsonUtils.NullStringToEmptyAdapterFactory())
+                .create());
     }
 
     /**

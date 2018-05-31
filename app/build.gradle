@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.alibaba.arouter'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 26
@@ -9,6 +11,13 @@ android {
         versionCode 1
         versionName "1.0.0"
         multiDexEnabled true
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ moduleName : project.getName() ]
+            }
+        }
+
     }
     buildTypes {
         release {
@@ -25,22 +34,43 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
 
+    repositories {
+        flatDir {
+            dirs 'libs' //this way we can find the .aar file in libs folder
+        }
+    }
+}
+
+greendao{
+    schemaVersion 2
+    targetGenDir 'src/main/java'
+    daoPackage 'common.utils.db.daos'
+}
+
+dependencies {
+    api fileTree(include: ['*.jar'], dir: 'libs')
     // 依赖多个 aar
     def dir = new File('app/libs')
     dir.traverse(
             nameFilter: ~/.*\.aar/
     ) { file ->
         def name = file.getName().replace('.aar', '')
-        implementation(name: name, ext: 'aar')
+        compile(name: name, ext: 'aar')
     }
 
-}
-
-dependencies {
-    api fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':common')
+
+    // 替换成最新版本, 需要注意的是api
+    // 要与compiler匹配使用，均使用最新版可以保证兼容
+    compile 'com.alibaba:arouter-api:1.3.1'
+    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+
+    compile 'jp.wasabeef:richeditor-android:1.2.2'
+
+    compile 'org.greenrobot:greendao:3.2.2'
+
 }

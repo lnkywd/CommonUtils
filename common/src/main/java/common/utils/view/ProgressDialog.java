@@ -21,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.request.RequestOptions;
 
 import common.utils.R;
 import common.utils.utils.ColorUtils;
@@ -111,7 +113,11 @@ public class ProgressDialog extends Dialog {
         Handlers.sharedHandler(getContext()).post(new Runnable() {
             @Override
             public void run() {
-                Glide.with(getContext()).load(img).into(mImg);
+                if (img instanceof Integer) {
+                    mImg.setImageResource((Integer) img);
+                } else {
+                    Glide.with(getContext()).load(img).apply(new RequestOptions().priority(Priority.HIGH)).into(mImg);
+                }
             }
         });
         mImg.setVisibility(View.VISIBLE);

@@ -203,6 +203,17 @@
 }
 ##---------------End: proguard configuration for umeng  ----------
 
+##---------------Start: proguard configuration for greendao  ----------
+-dontwarn org.greenrobot.greendao.**
+-keep class org.greenrobot.greendao.** { *; }
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+    public static java.lang.String TABLENAME;
+    public static void dropTable(org.greenrobot.greendao.database.Database, boolean);
+    public static void createTable(org.greenrobot.greendao.database.Database, boolean);
+}
+-keep class **$Properties
+##---------------End: proguard configuration for greendao  ----------
+
 # 第三方库
 -dontwarn javax.annotation.**
 -keep class javax.annotation.**{ *; }

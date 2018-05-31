@@ -8,22 +8,27 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import retrofit2.Response;
 
-/**
- * Created by MAC on 2017/4/7.
- */
-
 public abstract class HttpAction<T> implements Observer<T> {
 
     /**
      * 是否静默请求
      */
     private boolean quiet = false;
+    /**
+     * 是否是外部 url 请求，不走状态码判断
+     */
+    private boolean isOtherRequest = false;
 
     public HttpAction() {
     }
 
     public HttpAction(boolean quiet) {
         this.quiet = quiet;
+    }
+
+    public HttpAction(boolean quiet, boolean isOtherRequest) {
+        this.quiet = quiet;
+        this.isOtherRequest = isOtherRequest;
     }
 
     @Override
@@ -33,9 +38,13 @@ public abstract class HttpAction<T> implements Observer<T> {
 
     @Override
     public void onNext(T t) {
-        String code = null;
-        String msg = null;
         if (null != t) {
+            if (isOtherRequest) {
+                onHttpSuccess(t);
+                return;
+            }
+            String code;
+            String msg;
             if (t instanceof ApiResponseWraper) {
                 code = ((ApiResponseWraper) t).getCode();
                 msg = ((ApiResponseWraper) t).getMessage();
@@ -60,7 +69,6 @@ public abstract class HttpAction<T> implements Observer<T> {
                 ToastUtils.showShort("数据错误");
             }
         }
-        onHttpComplete();
     }
 
     @Override
@@ -81,6 +89,10 @@ public abstract class HttpAction<T> implements Observer<T> {
         onHttpComplete();
     }
 
+    public abstract void onHttpComplete();
+
+    public abstract void onHttpSuccess(T data);
+
     public abstract void onHttpError(Response response);
 
     protected boolean customCodeDeal(int code) {
@@ -91,13 +103,9 @@ public abstract class HttpAction<T> implements Observer<T> {
         return "200";
     }
 
-    public abstract void onHttpSuccess(T data);
-
     public void onHttpSuccess(T data, String code, String msg) {
         onHttpSuccess(data, code, msg, true);
     }
-
-    public abstract void onHttpComplete();
 
     public void onHttpSuccess(T data, String code, String msg, boolean showToast) {
         if (showToast && !quiet) {

@@ -36,6 +36,14 @@ public class CountdownUtils {
         }
     }
 
+    public Disposable getDisposable() {
+        return mDisposable;
+    }
+
+    public void setDisposable(Disposable disposable) {
+        mDisposable = disposable;
+    }
+
     public void countDown(long time, final OnTimeOverListener listener) {
         Observable.timer(time, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -72,6 +80,7 @@ public class CountdownUtils {
     public void onDestory() {
         if (mDisposable != null) {
             mDisposable.dispose();
+            mDisposable = null;
         }
     }
 

@@ -1,20 +1,23 @@
 package common.utils.base.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
+import org.greenrobot.eventbus.EventBus;
+
 import common.utils.utils.FragmentUtils;
+import common.utils.utils.LogUtils;
 
 
 public abstract class BaseFragment extends RxFragment
@@ -29,12 +32,15 @@ public abstract class BaseFragment extends RxFragment
     protected View contentView;
 
 
-    protected CommonBaseActivity mActivity;
+    protected Activity mActivity;
     protected Context mContext;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (isRegisterEvent()) {
+            EventBus.getDefault().register(this);
+        }
         if (savedInstanceState != null) {
             boolean isSupportHidden = savedInstanceState.getBoolean(STATE_SAVE_IS_HIDDEN);
             FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -45,20 +51,12 @@ public abstract class BaseFragment extends RxFragment
             }
             ft.commit();
         }
-        Log.d(TAG, "onCreate: ");
-        mContext = mActivity = (CommonBaseActivity) getActivity();
+        LogUtils.d(TAG, "onCreate: ");
+        mContext = mActivity = getActivity();
     }
 
-    @SuppressLint("ResourceType")
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: ");
-        setRetainInstance(true);
-        View view = bindLayout();
-        // viewgroup 代码 addview ，必须在 fragment 成型之前
-        onAddViewInit();
-        return view;
+    protected boolean isRegisterEvent() {
+        return false;
     }
 
     @Override
@@ -67,7 +65,37 @@ public abstract class BaseFragment extends RxFragment
         Bundle bundle = getArguments();
         initData(bundle);
         initView(savedInstanceState);
-        Log.d(TAG, "onViewCreated: ");
+        LogUtils.d(TAG, "onViewCreated: ");
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (contentView != null) {
+            ((ViewGroup) contentView.getParent()).removeView(contentView);
+        }
+        super.onDestroyView();
+        LogUtils.d(TAG, "onDestroyView: ");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (isRegisterEvent()) {
+            EventBus.getDefault().unregister(this);
+        }
+        LogUtils.d(TAG, "onDestroy: ");
+    }
+
+    @SuppressLint("ResourceType")
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        LogUtils.d(TAG, "onCreateView: ");
+        setRetainInstance(true);
+        View view = bindLayout();
+        // viewgroup 代码 addview ，必须在 fragment 成型之前
+        onAddViewInit();
+        return view;
     }
 
     public void onAddViewInit() {
@@ -78,22 +106,7 @@ public abstract class BaseFragment extends RxFragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         doBusiness();
-        Log.d(TAG, "onActivityCreated: ");
-    }
-
-    @Override
-    public void onDestroyView() {
-        if (contentView != null) {
-            ((ViewGroup) contentView.getParent()).removeView(contentView);
-        }
-        super.onDestroyView();
-        Log.d(TAG, "onDestroyView: ");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy: ");
+        LogUtils.d(TAG, "onActivityCreated: ");
     }
 
     @Override

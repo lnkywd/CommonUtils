@@ -14,8 +14,14 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -31,10 +37,12 @@ public class GsonUtils {
 
     private static Gson serializerGson = new GsonBuilder()
             .registerTypeAdapter(Uri.class, new UriSerializer())
+            .registerTypeAdapterFactory(new NullStringToEmptyAdapterFactory())
             .create();
 
     private static Gson deserializerGson = new GsonBuilder()
             .registerTypeAdapter(Uri.class, new UriDeserializer())
+            .registerTypeAdapterFactory(new NullStringToEmptyAdapterFactory())
             .create();
 
     public static <T> T fromJson(String json, Class<T> classT) {
@@ -80,7 +88,41 @@ public class GsonUtils {
         public JsonElement serialize(Uri src, Type typeOfSrc, JsonSerializationContext context) {
             return new JsonPrimitive(src.toString());
         }
+    }
 
+    public static class NullStringToEmptyAdapterFactory<T> implements TypeAdapterFactory {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            Class<T> rawType = (Class<T>) type.getRawType();
+            if (rawType != String.class) {
+                return null;
+            }
+            return (TypeAdapter<T>) new StringNullAdapter();
+        }
+    }
+
+    public static class StringNullAdapter extends TypeAdapter<String> {
+        @Override
+        public void write(JsonWriter writer, String value) throws IOException {
+            // TODO Auto-generated method stub
+            if (value == null) {
+                writer.nullValue();
+                return;
+            }
+            writer.value(value);
+        }
+
+        @Override
+        public String read(JsonReader reader) throws IOException {
+            // TODO Auto-generated method stub
+            if (reader.peek() == JsonToken.NULL) {
+                reader.nextNull();
+                return "";
+            }
+            return reader.nextString();
+        }
     }
 
 }

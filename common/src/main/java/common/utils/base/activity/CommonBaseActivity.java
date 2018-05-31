@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
+import org.greenrobot.eventbus.EventBus;
+
 import common.utils.R;
 import common.utils.utils.BarUtils;
 
@@ -27,6 +29,9 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
         super.onCreate(savedInstanceState);
         mActivity = this;
         mContext = this;
+        if (isRegisterEvent()) {
+            EventBus.getDefault().register(this);
+        }
         Bundle bundle = getIntent().getExtras();
         setLayout(bindLayout());
         initData(bundle);
@@ -35,6 +40,28 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
         }
         initView(savedInstanceState);
         doBusiness();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (isRegisterEvent()) {
+            EventBus.getDefault().unregister(this);
+        }
+    }
+
+    protected boolean isRegisterEvent() {
+        return false;
     }
 
     protected void setLayout(View view) {
@@ -71,21 +98,6 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
      * 是否高亮（黑色）
      */
     protected abstract boolean showTopBlackFont();
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 
     @Override
     public void finish() {

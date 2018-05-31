@@ -3,7 +3,7 @@ package common.utils.utils;
 
 import java.util.List;
 
-import common.utils.view.RichTextEditor;
+import common.utils.view.richtext.RichTextEditor;
 
 /**
  * Created by fzz on 2018/3/29 0029.
