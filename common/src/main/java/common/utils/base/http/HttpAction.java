@@ -19,6 +19,12 @@ public abstract class HttpAction<T> implements Observer<T> {
      */
     private boolean isOtherRequest = false;
 
+    /**
+     * 是否调用了 complete
+     */
+    private boolean hasRequest = false;
+
+
     public HttpAction() {
     }
 
@@ -41,6 +47,7 @@ public abstract class HttpAction<T> implements Observer<T> {
         if (null != t) {
             if (isOtherRequest) {
                 onHttpSuccess(t);
+                httpComplete();
                 return;
             }
             String code;
@@ -53,10 +60,12 @@ public abstract class HttpAction<T> implements Observer<T> {
                 msg = ((ApiResponseListWraper) t).getMessage();
             } else {
                 onHttpError(null);
+                httpComplete();
                 return;
             }
             if (code == null || TextUtils.isEmpty(code) || customCodeDeal(Integer.parseInt(code))) {
                 onHttpError(null);
+                httpComplete();
                 return;
             }
             if (TextUtils.equals(successCode(), code)) {
@@ -69,11 +78,12 @@ public abstract class HttpAction<T> implements Observer<T> {
                 ToastUtils.showShort("数据错误");
             }
         }
+        httpComplete();
     }
 
     @Override
     public void onError(Throwable t) {
-        onHttpComplete();
+        httpComplete();
         if (NetworkUtils.isConnected()) {
             onHttpError(null);
         } else {
@@ -86,12 +96,17 @@ public abstract class HttpAction<T> implements Observer<T> {
 
     @Override
     public void onComplete() {
-        onHttpComplete();
+        httpComplete();
     }
 
-    public abstract void onHttpComplete();
-
     public abstract void onHttpSuccess(T data);
+
+    private void httpComplete() {
+        if (!hasRequest) {
+            hasRequest = true;
+            onHttpComplete();
+        }
+    }
 
     public abstract void onHttpError(Response response);
 
@@ -106,6 +121,8 @@ public abstract class HttpAction<T> implements Observer<T> {
     public void onHttpSuccess(T data, String code, String msg) {
         onHttpSuccess(data, code, msg, true);
     }
+
+    public abstract void onHttpComplete();
 
     public void onHttpSuccess(T data, String code, String msg, boolean showToast) {
         if (showToast && !quiet) {

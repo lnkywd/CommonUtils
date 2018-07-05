@@ -9,6 +9,11 @@ import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshFooter;
+import com.scwang.smartrefresh.layout.api.RefreshHeader;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.constant.RefreshState;
+import com.scwang.smartrefresh.layout.listener.OnMultiPurposeListener;
 
 import java.util.List;
 
@@ -27,6 +32,7 @@ public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
     private BaseQuickAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private int mPage = 1;
+    private boolean hasMore = false;
 
     public CommonRefreshRecyclerView(Context context) {
         super(context);
@@ -76,6 +82,74 @@ public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
         }
         mAdapter.isUseEmpty(false);
         mRecyclerView.setAdapter(mAdapter);
+        setOnMultiPurposeListener(new OnMultiPurposeListener() {
+            @Override
+            public void onHeaderPulling(RefreshHeader header, float percent, int offset, int headerHeight, int extendHeight) {
+
+            }
+
+            @Override
+            public void onHeaderReleased(RefreshHeader header, int headerHeight, int extendHeight) {
+
+            }
+
+            @Override
+            public void onHeaderReleasing(RefreshHeader header, float percent, int offset, int headerHeight, int extendHeight) {
+
+            }
+
+            @Override
+            public void onHeaderStartAnimator(RefreshHeader header, int headerHeight, int extendHeight) {
+
+            }
+
+            @Override
+            public void onHeaderFinish(RefreshHeader header, boolean success) {
+
+            }
+
+            @Override
+            public void onFooterPulling(RefreshFooter footer, float percent, int offset, int footerHeight, int extendHeight) {
+
+            }
+
+            @Override
+            public void onFooterReleased(RefreshFooter footer, int footerHeight, int extendHeight) {
+
+            }
+
+            @Override
+            public void onFooterReleasing(RefreshFooter footer, float percent, int offset, int footerHeight, int extendHeight) {
+
+            }
+
+            @Override
+            public void onFooterStartAnimator(RefreshFooter footer, int footerHeight, int extendHeight) {
+
+            }
+
+            @Override
+            public void onFooterFinish(RefreshFooter footer, boolean success) {
+
+            }
+
+            @Override
+            public void onLoadMore(RefreshLayout refreshLayout) {
+
+            }
+
+            @Override
+            public void onRefresh(RefreshLayout refreshLayout) {
+
+            }
+
+            @Override
+            public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
+                if (newState == RefreshState.None) {
+                    setEnableLoadMore(hasMore);
+                }
+            }
+        });
     }
 
     /**
@@ -88,10 +162,11 @@ public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
     }
 
     public void onHttpSuccess(int page, boolean hasMore, List data) {
-        setEnableLoadMore(hasMore);
         if (page == 1) {
             mAdapter.getData().clear();
+            setEnableLoadMore(hasMore);
         }
+        this.hasMore = hasMore;
         mAdapter.getData().addAll(data);
         mAdapter.notifyDataSetChanged();
     }

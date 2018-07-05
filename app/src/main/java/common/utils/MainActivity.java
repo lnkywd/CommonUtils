@@ -12,7 +12,7 @@ import com.alibaba.android.arouter.facade.Postcard;
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
 import com.alibaba.android.arouter.launcher.ARouter;
 
-import common.utils.base.activity.CommonBaseActivity;
+import common.utils.base.activity.CommonBaseBackActivity;
 import common.utils.databinding.ActivityMainBinding;
 import common.utils.db.DbHelper;
 import common.utils.db.model.TestModel;
@@ -28,7 +28,7 @@ import io.reactivex.functions.Consumer;
  * Description
  */
 
-public class MainActivity extends CommonBaseActivity {
+public class MainActivity extends CommonBaseBackActivity {
 
     private ActivityMainBinding binding;
 
@@ -153,5 +153,10 @@ public class MainActivity extends CommonBaseActivity {
     @Override
     public boolean isShowStatusBar() {
         return true;
+    }
+
+    @Override
+    protected View getTitleView() {
+        return null;
     }
 }

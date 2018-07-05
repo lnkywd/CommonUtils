@@ -16,7 +16,8 @@ import common.utils.databinding.ActivityJump1Binding;
 import common.utils.db.DbHelper;
 import common.utils.db.model.TestModel;
 import common.utils.utils.RxTransformer;
-import io.reactivex.functions.Consumer;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 /**
  * @author wd
@@ -65,10 +66,25 @@ public class JumpActivity1 extends CommonBaseActivity {
         DbHelper.getInstance().test().loadAll()
                 .compose(this.<List<TestModel>>bindToLifecycle())
                 .compose(RxTransformer.<List<TestModel>>switchSchedulers())
-                .subscribe(new Consumer<List<TestModel>>() {
+                .subscribe(new Observer<List<TestModel>>() {
                     @Override
-                    public void accept(List<TestModel> testModels) throws Exception {
-                        
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(List<TestModel> testModels) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }

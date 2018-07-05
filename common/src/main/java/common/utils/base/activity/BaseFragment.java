@@ -38,9 +38,6 @@ public abstract class BaseFragment extends RxFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isRegisterEvent()) {
-            EventBus.getDefault().register(this);
-        }
         if (savedInstanceState != null) {
             boolean isSupportHidden = savedInstanceState.getBoolean(STATE_SAVE_IS_HIDDEN);
             FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -53,10 +50,6 @@ public abstract class BaseFragment extends RxFragment
         }
         LogUtils.d(TAG, "onCreate: ");
         mContext = mActivity = getActivity();
-    }
-
-    protected boolean isRegisterEvent() {
-        return false;
     }
 
     @Override
@@ -73,6 +66,9 @@ public abstract class BaseFragment extends RxFragment
         if (contentView != null) {
             ((ViewGroup) contentView.getParent()).removeView(contentView);
         }
+        if (isRegisterEvent() && EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
         super.onDestroyView();
         LogUtils.d(TAG, "onDestroyView: ");
     }
@@ -80,16 +76,20 @@ public abstract class BaseFragment extends RxFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (isRegisterEvent()) {
-            EventBus.getDefault().unregister(this);
-        }
         LogUtils.d(TAG, "onDestroy: ");
+    }
+
+    protected boolean isRegisterEvent() {
+        return false;
     }
 
     @SuppressLint("ResourceType")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (isRegisterEvent() && !EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
         LogUtils.d(TAG, "onCreateView: ");
         setRetainInstance(true);
         View view = bindLayout();

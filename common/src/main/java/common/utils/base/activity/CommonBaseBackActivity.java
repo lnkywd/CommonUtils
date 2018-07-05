@@ -42,7 +42,7 @@ public abstract class CommonBaseBackActivity extends CommonBaseActivity {
     }
 
     protected boolean addSlidr() {
-        return true;
+        return false;
     }
 
     /**
