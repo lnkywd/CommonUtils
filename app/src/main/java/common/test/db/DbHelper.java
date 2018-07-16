@@ -1,4 +1,4 @@
-package common.utils.db;
+package common.test.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -6,12 +6,12 @@ import android.database.sqlite.SQLiteDatabase;
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.database.Database;
 
+import common.test.db.daos.DaoMaster;
+import common.test.db.daos.DaoSession;
+import common.test.db.daos.TestModelDao;
+import common.test.db.model.TestModel;
 import common.utils.database.DBManager;
 import common.utils.database.MigrationHelper;
-import common.utils.db.daos.DaoMaster;
-import common.utils.db.daos.DaoSession;
-import common.utils.db.daos.TestModelDao;
-import common.utils.db.model.TestModel;
 
 /**
  * @author wd

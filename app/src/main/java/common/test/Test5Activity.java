@@ -1,4 +1,4 @@
-package common.utils;
+package common.test;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import common.utils.R;
 import common.utils.databinding.ActivityTest5Binding;
 
 /**

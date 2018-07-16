@@ -1,5 +1,7 @@
 package common.utils.utils;
 
+import android.app.Activity;
+import android.content.Context;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -30,6 +32,9 @@ public class GlideUtils {
      * 加载图片
      */
     public static void displayImage(ImageView imageView, Object img) {
+        if (isValidContextForGlide(imageView.getContext())) {
+            return;
+        }
         if (img == null) {
             img = "";
         }
@@ -43,26 +48,50 @@ public class GlideUtils {
     }
 
     /**
+     * 判断 context 是否能用
+     *
+     * @return true 为不能用，false 为能用
+     */
+    private static boolean isValidContextForGlide(final Context context) {
+        if (context == null) {
+            return true;
+        }
+        if (context instanceof Activity) {
+            final Activity activity = (Activity) context;
+            if (activity.isDestroyed() || activity.isFinishing()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * 加载头像
      */
-    public static void displayHead(ImageView imageview, Object img) {
+    public static void displayHead(ImageView imageView, Object img) {
+        if (isValidContextForGlide(imageView.getContext())) {
+            return;
+        }
         if (img == null) {
             img = "";
         }
-        Glide.with(imageview.getContext())
+        Glide.with(imageView.getContext())
                 .load(img)
                 .apply(new RequestOptions()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .error(headDefault)
                         .placeholder(headDefault)
                         .dontAnimate())
-                .into(imageview);
+                .into(imageView);
     }
 
     /**
      * 展示矩形圆角图片
      */
     public static void displayRoundCenterImage(ImageView imageView, Object img) {
+        if (isValidContextForGlide(imageView.getContext())) {
+            return;
+        }
         if (img == null) {
             img = "";
         }
@@ -81,6 +110,9 @@ public class GlideUtils {
      * 展示矩形圆角 原有图片
      */
     public static void displayRoundImage(ImageView imageView, Object img) {
+        if (isValidContextForGlide(imageView.getContext())) {
+            return;
+        }
         if (img == null) {
             img = "";
         }

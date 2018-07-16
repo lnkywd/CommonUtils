@@ -5,7 +5,7 @@ apply plugin: 'org.greenrobot.greendao'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "common.utils"
+        applicationId "common.test"
         minSdkVersion 17
         targetSdkVersion 23
         versionCode 1
@@ -44,22 +44,24 @@ android {
 greendao{
     schemaVersion 2
     targetGenDir 'src/main/java'
-    daoPackage 'common.utils.db.daos'
+    daoPackage 'common.test.db.daos'
 }
 
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
     // 依赖多个 aar
-    def dir = new File('app/libs')
-    dir.traverse(
-            nameFilter: ~/.*\.aar/
-    ) { file ->
-        def name = file.getName().replace('.aar', '')
-        compile(name: name, ext: 'aar')
+    def libsFolder = new File("aar")
+    for (aarFile in libsFolder.listFiles()) {
+        def fileName = aarFile.getName()
+        if (fileName.endsWith(".aar")) {
+            fileName = fileName.replaceAll(".aar", "")
+            compile name: "${fileName}", ext: 'aar'
+        }
     }
 
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
+    testCompile 'org.json:json:20180130'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':common')

@@ -27,12 +27,20 @@ import common.utils.utils.recycler.DividerItemBottomDecoration;
  * Description
  */
 
-public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
+public class CommonRefreshRecyclerView extends SmartRefreshLayout {
 
     private BaseQuickAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private int mPage = 1;
     private boolean hasMore = false;
+    /**
+     * 在倒数第几个 item 时进行数据加载，默认是倒数第 3 个
+     */
+    private int mLoadPosition = 3;
+    /**
+     * 是否开启快速加载，默认关闭
+     */
+    private boolean enableQuickLoad = false;
 
     public CommonRefreshRecyclerView(Context context) {
         super(context);
@@ -55,6 +63,10 @@ public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
         initView(context);
     }
 
+    public void setEnableQuickLoad(boolean enableQuickLoad) {
+        this.enableQuickLoad = enableQuickLoad;
+    }
+
     public BaseQuickAdapter getAdapter() {
         return mAdapter;
     }
@@ -74,8 +86,24 @@ public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
 
         setEnableLoadMore(false);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.addItemDecoration(new DividerItemBottomDecoration(mSpacing));
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (!enableQuickLoad) {
+                    return;
+                }
+                int lastItemPosition = linearLayoutManager.findLastVisibleItemPosition();
+                int calPosition = linearLayoutManager.getItemCount() - 1 - lastItemPosition;
+                if (calPosition <= mLoadPosition && calPosition > 0) {
+                    autoLoadMore();
+                }
+
+            }
+        });
         mAdapter = adapter;
         if (getEmptyView() != null) {
             mAdapter.setEmptyView(getEmptyView());
@@ -155,7 +183,13 @@ public abstract class CommonRefreshRecyclerView extends SmartRefreshLayout {
     /**
      * 设置空视图
      */
-    protected abstract View getEmptyView();
+    protected View getEmptyView() {
+        return null;
+    }
+
+    public RecyclerView getRecyclerView() {
+        return mRecyclerView;
+    }
 
     public void onHttpSuccess(boolean hasMore, List data) {
         onHttpSuccess(mPage, hasMore, data);

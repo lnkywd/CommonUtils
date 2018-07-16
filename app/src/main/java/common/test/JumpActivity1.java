@@ -1,4 +1,4 @@
-package common.utils;
+package common.test;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,10 +11,11 @@ import com.alibaba.android.arouter.facade.annotation.Route;
 
 import java.util.List;
 
+import common.test.db.model.TestModel;
+import common.utils.R;
 import common.utils.base.activity.CommonBaseActivity;
 import common.utils.databinding.ActivityJump1Binding;
-import common.utils.db.DbHelper;
-import common.utils.db.model.TestModel;
+import common.test.db.DbHelper;
 import common.utils.utils.RxTransformer;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

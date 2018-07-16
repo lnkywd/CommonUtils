@@ -78,6 +78,7 @@ public class BaseWebView extends RelativeLayout {
         webSetting.setAllowFileAccess(true);
         webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         webSetting.setSupportZoom(true);
+        webSetting.setSavePassword(false);
         // 是否支持viewport属性，默认值 false
         // 页面通过`<meta name="viewport" ... />`自适应手机屏幕
         // 当值为true且viewport标签不存在或未指定宽度时使用 wide viewport mode

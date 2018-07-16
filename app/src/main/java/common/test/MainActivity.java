@@ -1,4 +1,4 @@
-package common.utils;
+package common.test;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +12,11 @@ import com.alibaba.android.arouter.facade.Postcard;
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
 import com.alibaba.android.arouter.launcher.ARouter;
 
+import common.test.db.DbHelper;
+import common.test.db.model.TestModel;
+import common.utils.R;
 import common.utils.base.activity.CommonBaseBackActivity;
 import common.utils.databinding.ActivityMainBinding;
-import common.utils.db.DbHelper;
-import common.utils.db.model.TestModel;
 import common.utils.utils.RxTransformer;
 import common.utils.utils.ToastUtils;
 import common.utils.utils.apkdownload.UpdateAppUtils;
@@ -118,6 +119,12 @@ public class MainActivity extends CommonBaseBackActivity {
                                 }
                             }
                         });
+                break;
+            case R.id.btn08:
+                Test6Activity.launch(mContext);
+                break;
+            case R.id.btn09:
+                Test7Activity.launch(mContext);
                 break;
             default:
         }

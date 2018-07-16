@@ -1,4 +1,4 @@
-package common.utils;
+package common.test;
 
 import android.annotation.TargetApi;
 import android.app.NotificationChannel;
@@ -7,7 +7,9 @@ import android.os.Build;
 
 import com.alibaba.android.arouter.launcher.ARouter;
 
-import common.utils.db.DbHelper;
+import common.utils.BuildConfig;
+import common.utils.LibsApplication;
+import common.test.db.DbHelper;
 
 /**
  * @author wd

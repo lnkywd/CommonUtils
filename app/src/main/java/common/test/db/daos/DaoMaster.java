@@ -1,4 +1,4 @@
-package common.utils.db.daos;
+package common.test.db.daos;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
