@@ -108,6 +108,8 @@ dependencies {
      */
     // greendao 数据库
     provided 'org.greenrobot:greendao:3.2.2'
+    // 微信支付，分享相关 sdk，需要接入时，需导入包
+    provided 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
 }
 
 apply from: 'bintray.gradle'

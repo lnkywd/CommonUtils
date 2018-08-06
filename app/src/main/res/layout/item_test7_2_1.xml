@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
     </data>
 
     <TextView
-        android:orientation="vertical"
+        android:id="@+id/tv"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/size_100">
-
-    </TextView>
+        android:layout_height="@dimen/size_100"
+        android:gravity="center"
+        android:textColor="@color/c48b947"
+        android:textSize="@dimen/size_16"
+        tools:text="item" />
 </layout>

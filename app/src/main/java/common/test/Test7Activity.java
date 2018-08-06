@@ -3,23 +3,30 @@ package common.test;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.chad.library.adapter.base.entity.MultiItemEntity;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import common.utils.R;
 import common.utils.databinding.ActivityTest7Binding;
 import common.utils.databinding.ItemTest71Binding;
+import common.utils.databinding.ItemTest721Binding;
 import common.utils.databinding.ItemTest72Binding;
 import common.utils.utils.recycler.BaseDataBindingAdapter;
+import common.utils.utils.recycler.BaseMultiDataBindingAdapter;
 
 /**
  * @author wd
@@ -77,6 +84,7 @@ public class Test7Activity extends AppCompatActivity {
         Log.d("last--->", String.valueOf(lastItem));
         if (mPosition <= firstItem) {
             mBinding.rv2.scrollToPosition(mPosition);
+            move = true;
         } else if (mPosition <= lastItem) {
             Log.d("pos---->", String.valueOf(mPosition) + "VS" + firstItem);
             int top = mBinding.rv2.getChildAt(mPosition - firstItem).getTop();
@@ -137,16 +145,61 @@ public class Test7Activity extends AppCompatActivity {
         }
     }
 
+    private static class TestAdapter extends BaseMultiDataBindingAdapter<MultiItemEntity,ViewDataBinding>{
+
+        public TestAdapter(@Nullable List<MultiItemEntity> data) {
+            super(data);
+        }
+
+        @Override
+        protected void convert(ViewDataBinding binding, MultiItemEntity item, int position) {
+
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return super.getItemViewType(position);
+        }
+    }
+
     private static class Adapter2 extends BaseDataBindingAdapter<String, ItemTest72Binding> {
+
+        private String[] items = new String[12];
 
         public Adapter2(@Nullable List<String> data) {
             super(R.layout.item_test7_2, data);
+            for (int i = 0; i < items.length; i++) {
+                items[i] = "item" + i;
+            }
+        }
+
+        private static class Adapter extends BaseDataBindingAdapter<String, ItemTest721Binding> {
+
+            public Adapter(@Nullable List<String> data) {
+                super(R.layout.item_test7_2_1, data);
+            }
+
+            @Override
+            protected void convert(ItemTest721Binding binding, String item, int position) {
+                binding.tv.setText(item);
+            }
         }
 
         @Override
         protected void convert(ItemTest72Binding binding, String item, int position) {
             binding.tv.setText(item);
+            if (binding.rv.getLayoutManager() == null) {
+                binding.rv.setLayoutManager(new GridLayoutManager(mContext, 3));
+            }
+            List<String> list = new ArrayList<>();
+            int size = new Random().nextInt(9) + 1;
+            for (int i = 0; i < size; i++) {
+                list.add(items[i]);
+            }
+            binding.rv.setAdapter(new Adapter(list));
         }
+
+
     }
 
     private class RightRVListener extends RecyclerView.OnScrollListener {

@@ -59,6 +59,7 @@ public class Test6Activity extends AppCompatActivity {
 
     private void getData(boolean refresh) {
         mBinding.rv.getData(refresh);
+        mBinding.rv.getPage(refresh);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

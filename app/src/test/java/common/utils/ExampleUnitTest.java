@@ -12,8 +12,6 @@ import java.util.Iterator;
 
 import common.utils.utils.GsonUtils;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
@@ -22,7 +20,9 @@ import static org.junit.Assert.assertEquals;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+//        assertEquals(4, 2 + 2);
+//        System.out.println(TextUtils.isEmpty("123"));
+        System.out.println((int) 9.5);
     }
 
     @Test

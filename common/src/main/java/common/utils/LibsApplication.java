@@ -92,6 +92,7 @@ public class LibsApplication extends Application {
                     .connectionCreator(new OkHttp3Connection.Creator())
                     .commit();
             initX5();
+            mainInit();
         }
     }
 
@@ -143,6 +144,13 @@ public class LibsApplication extends Application {
         };
         //x5内核初始化接口
         QbSdk.initX5Environment(getApplicationContext(), cb);
+    }
+
+    /**
+     * 主线程初始化
+     */
+    protected void mainInit() {
+
     }
 
     protected boolean isDebug() {

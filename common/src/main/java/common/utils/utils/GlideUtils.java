@@ -32,6 +32,7 @@ public class GlideUtils {
      * 加载图片
      */
     public static void displayImage(ImageView imageView, Object img) {
+        imageView.setImageResource(commonDefault);
         if (isValidContextForGlide(imageView.getContext())) {
             return;
         }
@@ -69,6 +70,7 @@ public class GlideUtils {
      * 加载头像
      */
     public static void displayHead(ImageView imageView, Object img) {
+        imageView.setImageResource(headDefault);
         if (isValidContextForGlide(imageView.getContext())) {
             return;
         }
@@ -89,6 +91,7 @@ public class GlideUtils {
      * 展示矩形圆角图片
      */
     public static void displayRoundCenterImage(ImageView imageView, Object img) {
+        imageView.setImageResource(commonDefault);
         if (isValidContextForGlide(imageView.getContext())) {
             return;
         }
@@ -110,6 +113,7 @@ public class GlideUtils {
      * 展示矩形圆角 原有图片
      */
     public static void displayRoundImage(ImageView imageView, Object img) {
+        imageView.setImageResource(commonDefault);
         if (isValidContextForGlide(imageView.getContext())) {
             return;
         }

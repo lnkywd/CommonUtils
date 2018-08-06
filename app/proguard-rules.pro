@@ -471,6 +471,12 @@
 }
 ##---------------End: proguard configuration for x5.sdk classes   ----------
 
+##---------------Start: proguard configuration for WX SDK   ----------
+-keep class com.tencent.mm.opensdk.** {*;}
+-keep class com.tencent.wxop.** {*;}
+-keep class com.tencent.mm.sdk.** {*;}
+##---------------End: proguard configuration for WX SDK   ----------
+
 
 # 第三方库
 -dontwarn com.yanzhenjie.permission.**

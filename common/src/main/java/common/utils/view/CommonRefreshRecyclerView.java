@@ -13,6 +13,7 @@ import com.scwang.smartrefresh.layout.api.RefreshFooter;
 import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.constant.RefreshState;
+import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnMultiPurposeListener;
 
 import java.util.List;
@@ -32,7 +33,10 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
     private BaseQuickAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private int mPage = 1;
-    private boolean hasMore = false;
+    /**
+     * 记录是否刷新
+     */
+    private boolean isRefresh = true;
     /**
      * 在倒数第几个 item 时进行数据加载，默认是倒数第 3 个
      */
@@ -41,6 +45,83 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
      * 是否开启快速加载，默认关闭
      */
     private boolean enableQuickLoad = false;
+    /**
+     * 用于处理快速加载
+     */
+    private OnLoadMoreListener mCopyLoadMoreListener;
+    /**
+     * 用于处理上拉刷新动作全部结束后，再设置是否还能上拉刷新
+     */
+    private boolean hasMore = false;
+    private OnMultiPurposeListener mOnMultiPurposeListener = new OnMultiPurposeListener() {
+        @Override
+        public void onHeaderPulling(RefreshHeader header, float percent, int offset, int headerHeight, int extendHeight) {
+
+        }
+
+        @Override
+        public void onHeaderReleased(RefreshHeader header, int headerHeight, int extendHeight) {
+
+        }
+
+        @Override
+        public void onHeaderReleasing(RefreshHeader header, float percent, int offset, int headerHeight, int extendHeight) {
+
+        }
+
+        @Override
+        public void onHeaderStartAnimator(RefreshHeader header, int headerHeight, int extendHeight) {
+
+        }
+
+        @Override
+        public void onHeaderFinish(RefreshHeader header, boolean success) {
+
+        }
+
+        @Override
+        public void onFooterPulling(RefreshFooter footer, float percent, int offset, int footerHeight, int extendHeight) {
+
+        }
+
+        @Override
+        public void onFooterReleased(RefreshFooter footer, int footerHeight, int extendHeight) {
+
+        }
+
+        @Override
+        public void onFooterReleasing(RefreshFooter footer, float percent, int offset, int footerHeight, int extendHeight) {
+
+        }
+
+        @Override
+        public void onFooterStartAnimator(RefreshFooter footer, int footerHeight, int extendHeight) {
+
+        }
+
+        @Override
+        public void onFooterFinish(RefreshFooter footer, boolean success) {
+
+        }
+
+        @Override
+        public void onLoadMore(RefreshLayout refreshLayout) {
+
+        }
+
+        @Override
+        public void onRefresh(RefreshLayout refreshLayout) {
+
+        }
+
+        @Override
+        public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
+            if (newState == RefreshState.None) {
+                setEnableLoadMore(hasMore);
+            }
+        }
+    };
+
 
     public CommonRefreshRecyclerView(Context context) {
         super(context);
@@ -67,15 +148,30 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
         this.enableQuickLoad = enableQuickLoad;
     }
 
+    public void setLoadPosition(int position) {
+        this.mLoadPosition = position;
+    }
+
     public BaseQuickAdapter getAdapter() {
         return mAdapter;
     }
 
+    @Deprecated
     public void getData(boolean refresh) {
-        mPage = refresh ? mPage = 1 : mPage + 1;
+        this.isRefresh = refresh;
     }
 
+    @Deprecated
     public int getPage() {
+        return this.isRefresh ? 1 : mPage + 1;
+    }
+
+    public int getPage(boolean refresh) {
+        this.isRefresh = refresh;
+        return refresh ? 1 : mPage + 1;
+    }
+
+    public int getRealPage() {
         return mPage;
     }
 
@@ -99,7 +195,11 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
                 int lastItemPosition = linearLayoutManager.findLastVisibleItemPosition();
                 int calPosition = linearLayoutManager.getItemCount() - 1 - lastItemPosition;
                 if (calPosition <= mLoadPosition && calPosition > 0) {
-                    autoLoadMore();
+                    if (mLoadMoreListener != null && hasMore) {
+                        mLoadMoreListener.onLoadMore(null);
+                        mCopyLoadMoreListener = mLoadMoreListener;
+                        mLoadMoreListener = null;
+                    }
                 }
 
             }
@@ -110,74 +210,7 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
         }
         mAdapter.isUseEmpty(false);
         mRecyclerView.setAdapter(mAdapter);
-        setOnMultiPurposeListener(new OnMultiPurposeListener() {
-            @Override
-            public void onHeaderPulling(RefreshHeader header, float percent, int offset, int headerHeight, int extendHeight) {
-
-            }
-
-            @Override
-            public void onHeaderReleased(RefreshHeader header, int headerHeight, int extendHeight) {
-
-            }
-
-            @Override
-            public void onHeaderReleasing(RefreshHeader header, float percent, int offset, int headerHeight, int extendHeight) {
-
-            }
-
-            @Override
-            public void onHeaderStartAnimator(RefreshHeader header, int headerHeight, int extendHeight) {
-
-            }
-
-            @Override
-            public void onHeaderFinish(RefreshHeader header, boolean success) {
-
-            }
-
-            @Override
-            public void onFooterPulling(RefreshFooter footer, float percent, int offset, int footerHeight, int extendHeight) {
-
-            }
-
-            @Override
-            public void onFooterReleased(RefreshFooter footer, int footerHeight, int extendHeight) {
-
-            }
-
-            @Override
-            public void onFooterReleasing(RefreshFooter footer, float percent, int offset, int footerHeight, int extendHeight) {
-
-            }
-
-            @Override
-            public void onFooterStartAnimator(RefreshFooter footer, int footerHeight, int extendHeight) {
-
-            }
-
-            @Override
-            public void onFooterFinish(RefreshFooter footer, boolean success) {
-
-            }
-
-            @Override
-            public void onLoadMore(RefreshLayout refreshLayout) {
-
-            }
-
-            @Override
-            public void onRefresh(RefreshLayout refreshLayout) {
-
-            }
-
-            @Override
-            public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
-                if (newState == RefreshState.None) {
-                    setEnableLoadMore(hasMore);
-                }
-            }
-        });
+        setOnMultiPurposeListener(mOnMultiPurposeListener);
     }
 
     /**
@@ -192,12 +225,13 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
     }
 
     public void onHttpSuccess(boolean hasMore, List data) {
-        onHttpSuccess(mPage, hasMore, data);
-    }
-
-    public void onHttpSuccess(int page, boolean hasMore, List data) {
-        if (page == 1) {
+        if (this.isRefresh) {
+            mPage = 1;
             mAdapter.getData().clear();
+        } else {
+            mPage++;
+        }
+        if (this.isRefresh || mCopyLoadMoreListener != null) {
             setEnableLoadMore(hasMore);
         }
         this.hasMore = hasMore;
@@ -211,6 +245,10 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
         if (showEmpty) {
             mAdapter.isUseEmpty(true);
             mAdapter.notifyDataSetChanged();
+        }
+        if (enableQuickLoad && mCopyLoadMoreListener != null) {
+            mLoadMoreListener = mCopyLoadMoreListener;
+            mCopyLoadMoreListener = null;
         }
     }
 
