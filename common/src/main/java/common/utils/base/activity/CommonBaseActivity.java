@@ -66,10 +66,14 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
     }
 
     protected void setLayout(View view) {
-        overridePendingTransition(R.anim.slide_from_right, R.anim.keep_anim);
+        setOverridePendingTransition(R.anim.slide_from_right, R.anim.keep_anim);
         setContentView(view);
         contentView = view;
         initStatusBar(setStatusBarColor(), isShowStatusBar(), showTopBlackFont());
+    }
+
+    protected void setOverridePendingTransition(int enterAnim, int exitAnim) {
+        overridePendingTransition(enterAnim, exitAnim);
     }
 
     protected void initStatusBar(@ColorRes int color, boolean isShow, boolean showTopBlack) {
