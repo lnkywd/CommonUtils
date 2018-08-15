@@ -84,6 +84,7 @@ public class LibsApplication extends Application {
         if (defaultProcess) {
             sInstance = this;
             Utils.init(this);
+            com.blankj.utilcode.util.Utils.init(this);
             initLog();
             CrashUtils.init();
             registerActivityLifecycleCallbacks(mCallbacks);
