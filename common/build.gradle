@@ -32,16 +32,21 @@ android {
     packageBuildConfig(false)
 }
 
+ext {
+    supportLibVersion = '27.1.1'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "com.android.support:appcompat-v7:27.1.1"
-    compile "com.android.support:support-v4:27.1.1"
-    compile "com.android.support:design:27.1.1"
-    compile 'com.android.support:cardview-v7:27.1.1'
-    compile "com.android.support:recyclerview-v7:27.1.1"
+    compile "com.android.support:appcompat-v7:${supportLibVersion}"
+    compile "com.android.support:support-v4:${supportLibVersion}"
+    compile "com.android.support:design:${supportLibVersion}"
+    compile "com.android.support:cardview-v7:${supportLibVersion}"
+    compile "com.android.support:recyclerview-v7:${supportLibVersion}"
+    compile 'com.android.support.constraint:constraint-layout:1.1.3'
     // rxjava
-    compile 'io.reactivex.rxjava2:rxjava:2.1.7'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile 'io.reactivex.rxjava2:rxjava:2.2.1'
+    compile 'io.reactivex.rxjava2:rxandroid:2.1.0'
     // rxlife 依赖以下两个库，会自动引用基础库与Android库
     compile 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.0'
     compile 'com.trello.rxlifecycle2:rxlifecycle-navi:2.1.0'
@@ -54,14 +59,16 @@ dependencies {
     compile 'com.r0adkll:slidableactivity:2.0.6'
     // 下拉刷新
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.5.1'
-    compile 'com.yanzhenjie:permission:2.0.0-rc10'
+    // 权限处理
+    compile 'com.yanzhenjie:permission:2.0.0-rc11'
+    // 三级联动选择
     compile 'com.contrarywind:Android-PickerView:3.2.7'
     // gson
     compile 'com.google.code.gson:gson:2.8.5'
     // glide
     compile 'com.github.bumptech.glide:glide:4.6.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
-    // RecyclerVIew adapter
+    // RecyclerView adapter
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.35'
     // 图片选择器 https://github.com/LuckSiege/PictureSelector
     compile 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.0'
@@ -94,14 +101,16 @@ dependencies {
 //    // provide okhttp to connect to backend
 //    // and then please import okhttp dependencies by yourself
 //    compile 'com.liulishuo.okdownload:okhttp:1.0.2'
-    // okdownload end  https://github.com/lingochamp/okdownload
-    // FileDownloader start  https://github.com/lingochamp/FileDownloader
+    // FileDownloader  https://github.com/lingochamp/FileDownloader
     compile('cn.dreamtobe.filedownloader:filedownloader-okhttp3-connection:1.1.0') {
         exclude module: 'okhttp'
         exclude group: 'com.liulishuo.filedownloader', module: 'library'
     }
     compile 'com.liulishuo.filedownloader:library:1.7.3'
-    // FileDownloader end  https://github.com/lingochamp/FileDownloader
+    // 工具类
+    compile 'com.blankj:utilcode:1.19.0'
+    // 万能textView https://github.com/chenBingX/SuperTextView
+    compile 'com.github.chenBingX:SuperTextView:v3.0.0'
 
     /**
      * 下面的依赖包都只是包含，如果调用层没有使用，不需要编译依赖，那么打包时将不会包含进去，并不会增加 APK 的大小
@@ -110,8 +119,6 @@ dependencies {
     provided 'org.greenrobot:greendao:3.2.2'
     // 微信支付，分享相关 sdk，需要接入时，需导入包
     provided 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
-    // 工具类
-    compile 'com.blankj:utilcode:1.19.0'
 }
 
 apply from: 'bintray.gradle'

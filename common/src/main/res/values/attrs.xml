@@ -81,4 +81,28 @@
         <attr name="maxHeight" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="wd_CommonXEditText">
+
+        <attr name="ic_delete" format="reference" />
+        <attr name="delete_x" format="dimension" />
+        <attr name="delete_y" format="dimension" />
+        <attr name="delete_width" format="dimension" />
+        <attr name="delete_height" format="dimension" />
+
+        <attr name="ic_left_click" format="reference" />
+        <attr name="ic_left_unclick" format="reference" />
+        <attr name="left_x" format="dimension" />
+        <attr name="left_y" format="dimension" />
+        <attr name="left_width" format="dimension" />
+        <attr name="left_height" format="dimension" />
+
+        <attr name="lineColor_click" format="color" />
+        <attr name="lineColor_unclick" format="color" />
+        <attr name="show_line" format="boolean" />
+        <attr name="linePosition" format="integer" />
+
+        <attr name="cursor" format="reference" />
+
+    </declare-styleable>
+
 </resources>

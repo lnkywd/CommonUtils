@@ -80,5 +80,12 @@
         <item name="android:focusableInTouchMode">true</item>
     </style>
 
+    <style name="Click_Fore_Ripple">
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Click_Fore_Ripple_Borderless">
+        <item name="android:foreground">?android:attr/selectableItemBackgroundBorderless</item>
+    </style>
 
 </resources>

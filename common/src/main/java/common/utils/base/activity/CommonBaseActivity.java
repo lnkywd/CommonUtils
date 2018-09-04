@@ -28,17 +28,18 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        afterSuperOnCreate();
         mActivity = this;
         mContext = this;
         if (isRegisterEvent() && !EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
         Bundle bundle = getIntent().getExtras();
-        setLayout(bindLayout());
         initData(bundle);
         if (isFinishing()) {
             return;
         }
+        setLayout(bindLayout());
         initView(savedInstanceState);
         doBusiness();
     }
@@ -59,6 +60,10 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
         if (isRegisterEvent() && EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
+    }
+
+    protected void afterSuperOnCreate() {
+
     }
 
     protected boolean isRegisterEvent() {

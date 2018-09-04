@@ -97,4 +97,7 @@
 
     <color name="black_70">#B3000000</color>
 
+    <color name="lineColor_click">#1296db</color>
+    <color name="lineColor_unclick">#9b9b9b</color>
+
 </resources>

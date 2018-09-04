@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -73,12 +74,27 @@
                 android:onClick="click"
                 android:text="跳转 Test6Activity(Recyclerview 数据)" />
 
-            <Button
+            <TextView
                 android:id="@+id/btn09"
+                style="@style/Click_Fore_Ripple"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="#ffffff"
                 android:onClick="click"
+                android:padding="@dimen/size_10"
                 android:text="跳转 Test7Activity(RecyclerView 左右联动)" />
+
+            <common.test.XEditText
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/size_60"
+                android:layout_marginLeft="@dimen/size_20"
+                android:layout_marginRight="@dimen/size_20"
+                app:ic_left_click="@mipmap/wd_icon_delete"
+                app:left_height="@dimen/size_20"
+                app:left_width="@dimen/size_20"
+                app:lineColor_click="@color/color_fc5000"
+                app:lineColor_unclick="@color/color_666666"
+                app:show_line="true" />
 
         </LinearLayout>
 
