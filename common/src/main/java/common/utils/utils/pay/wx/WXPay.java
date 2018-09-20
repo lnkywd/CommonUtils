@@ -8,6 +8,7 @@ import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
+import common.utils.LibsApplication;
 import common.utils.utils.ToastUtils;
 
 /**
@@ -56,9 +57,16 @@ public class WXPay {
         mWXApi.registerApp(wxAppid);
     }
 
+    public static void init(String wxAppid) {
+        if (mWXPay == null) {
+            mWXPay = new WXPay(LibsApplication.getInstance().getApplicationContext(), wxAppid);
+        }
+    }
+
+    @Deprecated
     public static void init(Context context, String wxAppid) {
         if (mWXPay == null) {
-            mWXPay = new WXPay(context, wxAppid);
+            mWXPay = new WXPay(context.getApplicationContext(), wxAppid);
         }
     }
 

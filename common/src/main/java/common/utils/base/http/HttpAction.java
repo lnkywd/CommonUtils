@@ -60,11 +60,13 @@ public abstract class HttpAction<T> implements Observer<T> {
                 msg = ((ApiResponseListWraper) t).getMessage();
             } else {
                 onHttpError(null);
+                onHttpActionError(new MyCustomException(MyCustomException.ENTITY_ERROR));
                 httpComplete();
                 return;
             }
             if (code == null || TextUtils.isEmpty(code) || customCodeDeal(Integer.parseInt(code))) {
                 onHttpError(null);
+                onHttpActionError(new MyCustomException(code, MyCustomException.CODE_ERROR));
                 httpComplete();
                 return;
             }
@@ -86,6 +88,7 @@ public abstract class HttpAction<T> implements Observer<T> {
         httpComplete();
         if (NetworkUtils.isConnected()) {
             onHttpError(null);
+            onHttpActionError(new MyCustomException(t, MyCustomException.RX_ERROR));
         } else {
             if (quiet) {
                 return;
@@ -108,7 +111,14 @@ public abstract class HttpAction<T> implements Observer<T> {
         }
     }
 
-    public abstract void onHttpError(Response response);
+    @Deprecated
+    public void onHttpError(Response response) {
+
+    }
+
+    public void onHttpActionError(MyCustomException myCustomException) {
+
+    }
 
     protected boolean customCodeDeal(int code) {
         return false;
@@ -128,6 +138,10 @@ public abstract class HttpAction<T> implements Observer<T> {
         if (showToast && !quiet) {
             ToastUtils.showShort(msg);
         }
+    }
+
+    public void onHttpError() {
+
     }
 
 }

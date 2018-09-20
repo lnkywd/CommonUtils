@@ -96,6 +96,50 @@
                 app:lineColor_unclick="@color/color_666666"
                 app:show_line="true" />
 
+            <com.coorchice.library.SuperTextView
+                android:id="@+id/btn10"
+                style="@style/Click_Fore_Ripple_Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="click"
+                android:padding="@dimen/size_10"
+                android:text="测试"
+                android:textColor="@color/white"
+                app:corner="@dimen/size_3"
+                app:pressBgColor="@color/color_fc5000"
+                app:solid="@color/color_666666" />
+
+            <TextView
+                android:id="@+id/btn11"
+                style="@style/Click_Fore_Ripple_Borderless"
+                android:layout_width="@dimen/size_80"
+                android:layout_height="@dimen/size_40"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/size_10"
+                android:gravity="center"
+                android:onClick="click"
+                android:text="测试" />
+
+            <common.utils.view.CodeInputView
+                android:id="@+id/passwordView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/size_20"
+                app:borderColor="#999999"
+                app:borderDistance="@dimen/size_10"
+                app:borderLength="@dimen/size_38"
+                app:borderWidth="@dimen/size_2"
+                app:cipherEnable="false"
+                app:currentBorderColor="#58CDC7"
+                app:cursorColor="#58CDC7"
+                app:mode="underline"
+                app:passwordColor="#333333"
+                app:passwordLength="6"
+                app:passwordPadding="@dimen/size_12"
+                app:passwordSize="@dimen/size_25" />
+
         </LinearLayout>
 
     </ScrollView>

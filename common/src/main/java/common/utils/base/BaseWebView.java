@@ -97,7 +97,8 @@ public class BaseWebView extends RelativeLayout {
         // webSetting.setPageCacheCapacity(IX5WebSettings.DEFAULT_CACHE_CAPACITY);
         webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
         // webSetting.setRenderPriority(WebSettings.RenderPriority.HIGH);
-        webSetting.setCacheMode(WebSettings.LOAD_NO_CACHE);
+//        webSetting.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webSetting.setCacheMode(WebSettings.LOAD_DEFAULT);
         mBinding.webViewAdv.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
         mBinding.webViewAdv.setBackgroundColor(0);//设置背景透明
 

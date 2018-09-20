@@ -105,4 +105,39 @@
 
     </declare-styleable>
 
+    <declare-styleable name="wd_DYLoadingView">
+        <attr name="radius1" format="dimension"/>
+        <attr name="radius2" format="dimension"/>
+        <attr name="rtlScale" format="float"/>
+        <attr name="ltrScale" format="float"/>
+        <attr name="color1" format="color"/>
+        <attr name="color2" format="color"/>
+        <attr name="mixColor" format="color"/>
+        <attr name="duration" format="integer"/>
+        <attr name="pauseDuration" format="integer"/>
+        <attr name="gap" format="dimension"/>
+        <attr name="scaleStartFraction" format="float"/>
+        <attr name="scaleEndFraction" format="float"/>
+    </declare-styleable>
+
+    <declare-styleable name="wd_CodeInputView">
+        <attr name="passwordLength" format="integer" />
+        <attr name="passwordPadding" format="dimension" />
+        <attr name="borderColor" format="color" />
+        <attr name="borderWidth" format="dimension" />
+        <attr name="cursorFlashTime" format="integer" />
+        <attr name="isCursorEnable" format="boolean" />
+        <attr name="cipherEnable" format="boolean" />
+        <attr name="cursorColor" format="color" />
+        <attr name="currentBorderColor" format="color" />
+        <attr name="passwordColor" format="color" />
+        <attr name="passwordSize" format="dimension" />
+        <attr name="borderDistance" format="dimension" />
+        <attr name="borderLength" format="dimension" />
+        <attr name="mode" format="enum">
+            <enum name="underline" value="0" />
+            <enum name="rect" value="1" />
+        </attr>
+    </declare-styleable>
+
 </resources>
