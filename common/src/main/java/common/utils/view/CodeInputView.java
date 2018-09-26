@@ -187,7 +187,7 @@ public class CodeInputView extends View {
     /**
      * 获取密码
      */
-    private String getPassword() {
+    public String getPassword() {
         StringBuffer stringBuffer = new StringBuffer();
         for (String c : password) {
             if (TextUtils.isEmpty(c)) {

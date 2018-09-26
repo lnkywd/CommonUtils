@@ -82,6 +82,9 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
     }
 
     protected void initStatusBar(@ColorRes int color, boolean isShow, boolean showTopBlack) {
+        if (!isInitStatusBar()) {
+            return;
+        }
         if (isShow) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 BarUtils.setStatusBarColor(this, ContextCompat.getColor(this, color), 0);
@@ -108,6 +111,10 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
      * 是否高亮（黑色）
      */
     protected abstract boolean showTopBlackFont();
+
+    protected boolean isInitStatusBar() {
+        return true;
+    }
 
     @Override
     public void finish() {

@@ -39,6 +39,8 @@ public class Test6Activity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        overridePendingTransition(R.anim.slide_from_bottom, R.anim.keep_anim);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_test6);
 
         mBinding.rv.init(this, 0, 0, new Adapter(new ArrayList<String>()));
@@ -55,6 +57,12 @@ public class Test6Activity extends AppCompatActivity {
             }
         });
         mBinding.rv.autoRefresh();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.keep_anim, R.anim.slide_to_bottom);
     }
 
     private void getData(boolean refresh) {
