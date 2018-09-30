@@ -19,6 +19,10 @@ import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import common.utils.LibsApplication;
 import common.utils.R;
 import common.utils.databinding.LayoutBaseWebviewBinding;
 import common.utils.utils.LogUtils;
@@ -39,10 +43,10 @@ public class BaseWebView extends RelativeLayout {
 
     private LayoutBaseWebviewBinding mBinding;
     private OnWebTitleChangeListener listener;
+    private OnUrlLoadingListener mOnUrlLoadingListener;
     private boolean showProgress = true;
     private boolean isLoadError = false;
     private String mUrl = "";
-
     //视频全屏相关
     private OnVideoViewListener mOnVideoViewListener;
 
@@ -74,7 +78,9 @@ public class BaseWebView extends RelativeLayout {
         webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
         webSetting.setDisplayZoomControls(false);
         webSetting.setBuiltInZoomControls(true);
+        // 开启 DOM storage 功能
         webSetting.setDomStorageEnabled(true);
+        // 可以读取文件缓存
         webSetting.setAllowFileAccess(true);
         webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         webSetting.setSupportZoom(true);
@@ -90,10 +96,12 @@ public class BaseWebView extends RelativeLayout {
             webSetting.setMixedContentMode(0);
         }
         webSetting.setSupportMultipleWindows(true);
+        // 开启H5(APPCache)缓存功能
         webSetting.setAppCacheEnabled(true);
         // webSetting.setDatabaseEnabled(true);
         webSetting.setGeolocationEnabled(true);
         webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
+        webSetting.setAppCachePath(LibsApplication.getInstance().getCacheDir().getAbsolutePath());
         // webSetting.setPageCacheCapacity(IX5WebSettings.DEFAULT_CACHE_CAPACITY);
         webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
         // webSetting.setRenderPriority(WebSettings.RenderPriority.HIGH);
@@ -101,7 +109,6 @@ public class BaseWebView extends RelativeLayout {
         webSetting.setCacheMode(WebSettings.LOAD_DEFAULT);
         mBinding.webViewAdv.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
         mBinding.webViewAdv.setBackgroundColor(0);//设置背景透明
-
 
         mBinding.webViewAdv.setWebChromeClient(new WebChromeClient() {
 
@@ -165,8 +172,11 @@ public class BaseWebView extends RelativeLayout {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
+                if (mOnUrlLoadingListener != null && mOnUrlLoadingListener.shouldOverrideUrlLoading(view, url)) {
+                    return true;
+                }
                 mUrl = url;
+                view.loadUrl(url);
                 return true;
             }
 
@@ -218,6 +228,10 @@ public class BaseWebView extends RelativeLayout {
         init();
     }
 
+    public void setOnUrlLoadingListener(OnUrlLoadingListener onUrlLoadingListener) {
+        mOnUrlLoadingListener = onUrlLoadingListener;
+    }
+
     public void setLoadingColor(int color) {
         mBinding.webProgress.setColor(color);
     }
@@ -242,12 +256,8 @@ public class BaseWebView extends RelativeLayout {
         return mBinding.webViewAdv;
     }
 
-    public void setUrl(String url) {
-        if (mBinding != null) {
-            LogUtils.i(TAG, url);
-            mUrl = url;
-            mBinding.webViewAdv.loadUrl(url);
-        }
+    public String getCurrentUrl() {
+        return this.mUrl;
     }
 
     public void onPause() {
@@ -283,19 +293,49 @@ public class BaseWebView extends RelativeLayout {
         return true;
     }
 
-    public interface OnWebTitleChangeListener {
+    /**
+     * 存储 h5 LocalStorage
+     *
+     * @param map         要存储的键值对
+     * @param redirectUrl 存储之后重定向 Url
+     */
+    public void saveLocalStorage(HashMap<String, Object> map, String redirectUrl) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                mBinding.webViewAdv.evaluateJavascript(
+                        String.format("window.localStorage.setItem('%s','%s');", entry.getKey(), entry.getValue().toString()), null);
+            } else {
+                mBinding.webViewAdv.loadUrl(
+                        String.format("javascript:localStorage.setItem('%s','%s');", entry.getKey(), entry.getValue().toString()));
+            }
+        }
+        if (!TextUtils.isEmpty(redirectUrl)) {
+            setUrl(redirectUrl);
+        }
+    }
 
+    public void setUrl(String url) {
+        if (mBinding != null) {
+            LogUtils.i(TAG, url);
+            mUrl = url;
+            mBinding.webViewAdv.loadUrl(url);
+        }
+    }
+
+    public interface OnWebTitleChangeListener {
         void changeTitle(String title);
 
         void onLoadFinish();
-
     }
 
     public interface OnVideoViewListener {
-
         void showCustomView(View view, IX5WebChromeClient.CustomViewCallback callback);
 
         void hide();
+    }
+
+    public interface OnUrlLoadingListener {
+        boolean shouldOverrideUrlLoading(WebView view, String url);
     }
 
 }

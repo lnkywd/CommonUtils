@@ -2,15 +2,31 @@ package common.test;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
 import com.alibaba.android.arouter.facade.Postcard;
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
 import com.alibaba.android.arouter.launcher.ARouter;
+import com.blankj.utilcode.util.ImageUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
+
+import java.io.File;
+import java.util.List;
 
 import common.test.db.DbHelper;
 import common.test.db.model.TestModel;
@@ -125,6 +141,42 @@ public class MainActivity extends CommonBaseBackActivity {
                 break;
             case R.id.btn09:
                 Test7Activity.launch(mContext);
+
+                break;
+            case R.id.btn12:
+                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Pictures" + File.separator;
+                Log.i("wdwdwd", filePath);
+                final String fileName = String.format("%s%s.png", filePath, System.currentTimeMillis());
+                AndPermission.with(mContext)
+                        .runtime()
+                        .permission(Permission.WRITE_EXTERNAL_STORAGE)
+                        .onGranted(new Action<List<String>>() {
+                            @Override
+                            public void onAction(List<String> data) {
+                                Glide.with(mContext)
+                                        .load("https://img.globalwinner.cn/upload/cb97e32ef5a9ebfed76d3738fb95298c.png")
+                                        .into(new SimpleTarget<Drawable>() {
+                                            @Override
+                                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                                Bitmap bitmap = ((BitmapDrawable) resource).getBitmap();
+                                                ImageUtils.save(bitmap, fileName, Bitmap.CompressFormat.PNG, true);
+                                                Uri uri = Uri.fromFile(new File(fileName));
+                                                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+
+//                                                MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "分享图片", "分享图片");
+//                                                Log.i("wdwdwdwd", "执行了===");
+                                            }
+                                        });
+                            }
+                        })
+                        .onDenied(new Action<List<String>>() {
+                            @Override
+                            public void onAction(List<String> data) {
+
+                            }
+                        })
+                        .start();
+
                 break;
             default:
         }

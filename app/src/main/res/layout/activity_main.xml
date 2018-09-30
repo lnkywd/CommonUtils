@@ -84,6 +84,13 @@
                 android:padding="@dimen/size_10"
                 android:text="跳转 Test7Activity(RecyclerView 左右联动)" />
 
+            <Button
+                android:id="@+id/btn12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="click"
+                android:text="保存图片到本地相册" />
+
             <common.test.XEditText
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/size_60"
@@ -95,6 +102,16 @@
                 app:lineColor_click="@color/color_fc5000"
                 app:lineColor_unclick="@color/color_666666"
                 app:show_line="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:includeFontPadding="false"
+                android:text="99.90"
+                android:textColor="@color/color_bbbbbb"
+                android:textSize="@dimen/size_19" />
+
 
             <com.coorchice.library.SuperTextView
                 android:id="@+id/btn10"

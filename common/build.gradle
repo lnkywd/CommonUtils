@@ -111,6 +111,8 @@ dependencies {
     compile 'com.blankj:utilcode:1.19.0'
     // 万能textView https://github.com/chenBingX/SuperTextView
     compile 'com.github.chenBingX:SuperTextView:v3.0.0'
+    // RxPermissions https://github.com/tbruyelle/RxPermissions
+    compile 'com.github.tbruyelle:rxpermissions:0.10.2'
 
     /**
      * 下面的依赖包都只是包含，如果调用层没有使用，不需要编译依赖，那么打包时将不会包含进去，并不会增加 APK 的大小

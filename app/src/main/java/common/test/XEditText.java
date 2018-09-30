@@ -30,4 +30,5 @@ public class XEditText extends CommonXEditText {
     protected int getDeleteRes() {
         return super.getDeleteRes();
     }
+
 }
