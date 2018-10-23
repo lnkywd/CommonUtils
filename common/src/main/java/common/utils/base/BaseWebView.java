@@ -83,6 +83,7 @@ public class BaseWebView extends RelativeLayout {
         // 可以读取文件缓存
         webSetting.setAllowFileAccess(true);
         webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        // 设置支持缩放
         webSetting.setSupportZoom(true);
         webSetting.setSavePassword(false);
         // 是否支持viewport属性，默认值 false
@@ -109,6 +110,8 @@ public class BaseWebView extends RelativeLayout {
         webSetting.setCacheMode(WebSettings.LOAD_DEFAULT);
         mBinding.webViewAdv.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
         mBinding.webViewAdv.setBackgroundColor(0);//设置背景透明
+        // 设置初始缩放
+        mBinding.webViewAdv.setInitialScale(100);
 
         mBinding.webViewAdv.setWebChromeClient(new WebChromeClient() {
 
