@@ -111,7 +111,7 @@ public class BaseWebView extends RelativeLayout {
         mBinding.webViewAdv.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
         mBinding.webViewAdv.setBackgroundColor(0);//设置背景透明
         // 设置初始缩放
-        mBinding.webViewAdv.setInitialScale(100);
+        mBinding.webViewAdv.setInitialScale(1);
 
         mBinding.webViewAdv.setWebChromeClient(new WebChromeClient() {
 
