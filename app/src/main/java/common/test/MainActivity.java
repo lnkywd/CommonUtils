@@ -11,8 +11,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import com.alibaba.android.arouter.facade.Postcard;
 import com.alibaba.android.arouter.facade.callback.NavigationCallback;
@@ -196,7 +201,23 @@ public class MainActivity extends CommonBaseBackActivity {
 
     @Override
     public void initView(Bundle savedInstanceState) {
+        String text = binding.tv11.getText().toString()+"1";
+        SpannableString spannableString = new SpannableString(text);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.tv_tag, null);//R.layout.tag是每个标签的布局
+        Bitmap bitmap = convertViewToBitmap(view);
+        TextView tv_tag = view.findViewById(R.id.tv_tag);
+        Drawable d = new BitmapDrawable(bitmap);
+        d.setBounds(0, 0, tv_tag.getWidth(), tv_tag.getHeight());//缺少这句的话，不会报错，但是图片不回显示
+        ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BOTTOM);//图片将对齐底部边线
+        spannableString.setSpan(span, text.length() - 1, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        binding.tv11.setText(spannableString);
+    }
 
+    private static Bitmap convertViewToBitmap(View view) {
+        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        view.buildDrawingCache();
+        return view.getDrawingCache();
     }
 
     @Override

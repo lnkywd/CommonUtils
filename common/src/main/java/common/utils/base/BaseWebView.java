@@ -173,11 +173,18 @@ public class BaseWebView extends RelativeLayout {
         });
         mBinding.webViewAdv.setWebViewClient(new WebViewClient() {
 
+            private boolean mIsRedirect = true;
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                LogUtils.i(TAG, "url==" + url);
                 if (mOnUrlLoadingListener != null && mOnUrlLoadingListener.shouldOverrideUrlLoading(view, url)) {
                     return true;
                 }
+                if (!(url.startsWith("http") || url.startsWith("https"))) {
+                    return true;
+                }
+                mIsRedirect = true;
                 mUrl = url;
                 view.loadUrl(url);
                 return true;
@@ -185,6 +192,7 @@ public class BaseWebView extends RelativeLayout {
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                mIsRedirect = false;
                 super.onPageStarted(view, url, favicon);
                 if (showProgress) {
                     mBinding.webProgress.setVisibility(View.VISIBLE);
@@ -195,6 +203,9 @@ public class BaseWebView extends RelativeLayout {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                if (mIsRedirect) {
+                    return;
+                }
                 if (isLoadError) {
                     errorDeal();
                 }
