@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -68,12 +69,9 @@ public class HttpManage {
     private static HttpManage mServiceManage;
     private static boolean mIsDebug;
     private Retrofit retrofit;
+    private HashMap<String, String> mHeaders = new HashMap<>();
 
     private HttpManage(String baseUrl) {
-        this(baseUrl, null);
-    }
-
-    private HttpManage(String baseUrl, final Map<String, String> headers) {
         //缓存目录
         File files = new File(Environment.getDownloadCacheDirectory().toString(), "cache");
         //缓存大小为10M
@@ -107,39 +105,38 @@ public class HttpManage {
         if (mIsDebug) {
             builder.addInterceptor(httpLoggingInterceptor);
         }
-        if (headers != null) {
-            builder.addInterceptor(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Request request = chain.request();
-                    Request.Builder requestBuilder = request.newBuilder();
-                    for (Map.Entry<String, String> entry : headers.entrySet()) {
+        builder.addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                Request.Builder requestBuilder = request.newBuilder();
+                if (mHeaders != null && mHeaders.size() > 0) {
+                    for (Map.Entry<String, String> entry : mHeaders.entrySet()) {
                         requestBuilder.addHeader(entry.getKey(), entry.getValue());
                     }
-                    return chain.proceed(requestBuilder.build());
                 }
-            });
-        }
+                return chain.proceed(requestBuilder.build());
+            }
+        });
 
         OkHttpClient client = builder.build();
-        retrofit =
-                new Retrofit.Builder().baseUrl(baseUrl)
-                        .client(client)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                        .build();
+        retrofit = new Retrofit.Builder().baseUrl(baseUrl)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
     }
 
     public static HttpManage getInstance(String baseUrl, boolean isDebug) {
-        return getInstance(baseUrl, isDebug, null);
-    }
-
-    public static HttpManage getInstance(String baseUrl, boolean isDebug, Map<String, String> headers) {
         mIsDebug = isDebug;
         if (mServiceManage == null) {
-            mServiceManage = new HttpManage(baseUrl, headers);
+            mServiceManage = new HttpManage(baseUrl);
         }
         return mServiceManage;
+    }
+
+    public HashMap<String, String> getHeaders() {
+        return mHeaders;
     }
 
     public <T> T creat(Class<T> service) {

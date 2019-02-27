@@ -108,7 +108,7 @@ dependencies {
     }
     compile 'com.liulishuo.filedownloader:library:1.7.3'
     // 工具类
-    compile 'com.blankj:utilcode:1.19.0'
+    compile 'com.blankj:utilcode:1.23.4'
     // 万能textView https://github.com/chenBingX/SuperTextView
     compile 'com.github.chenBingX:SuperTextView:v3.0.0'
     // RxPermissions https://github.com/tbruyelle/RxPermissions

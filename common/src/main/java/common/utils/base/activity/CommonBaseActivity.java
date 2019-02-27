@@ -1,11 +1,14 @@
 package common.utils.base.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.ColorRes;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +26,8 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
     protected View contentView;
     protected CommonBaseActivity mActivity;
     protected Context mContext;
+    private String mStartActivityTag;
+    private long mStartActivityTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +94,9 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 BarUtils.setStatusBarColor(this, ContextCompat.getColor(this, color), 0);
                 contentView.setFitsSystemWindows(true);
-                if (showTopBlack)
+                if (showTopBlack) {
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                else {
+                } else {
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                 }
             } else {
@@ -120,6 +125,56 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
+    }
+
+    /**
+     * 防 Activity 多重跳转：https://www.jianshu.com/p/579f1f118161
+     */
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
+        if (startActivitySelfCheck(intent)) {
+            // 查看源码得知 startActivity 最终也会调用 startActivityForResult
+            super.startActivityForResult(intent, requestCode, options);
+        }
+    }
+
+    /**
+     * 检查当前 Activity 是否重复跳转了，不需要检查则重写此方法并返回 true 即可
+     *
+     * @param intent 用于跳转的 Intent 对象
+     * @return 检查通过返回true, 检查不通过返回false
+     */
+    protected boolean startActivitySelfCheck(Intent intent) {
+        // 默认检查通过
+        boolean result = true;
+        // 标记对象
+        String tag;
+        if (intent.getComponent() != null) {
+            // 显式跳转
+            tag = intent.getComponent().getClassName();
+        } else if (intent.getAction() != null) {
+            // 隐式跳转
+            tag = intent.getAction();
+        } else { // 其他方式
+            return true;
+        }
+
+        if (tag.equals(mStartActivityTag) && mStartActivityTime >= SystemClock.uptimeMillis() - minClickDelayTime()) {
+            // 检查不通过
+            result = false;
+        }
+
+        mStartActivityTag = tag;
+        mStartActivityTime = SystemClock.uptimeMillis();
+        return result;
+    }
+
+    /**
+     * 两次跳转 activity 间隔
+     */
+    protected int minClickDelayTime() {
+        return 1000;
     }
 
     public <T extends ViewDataBinding> T getDataBinding(int layoutId) {
