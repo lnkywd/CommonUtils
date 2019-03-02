@@ -21,6 +21,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.internal.platform.Platform;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
@@ -40,7 +41,7 @@ public class HttpManage {
      * 云端响应头拦截器，用来配置缓存策略
      * Dangerous interceptor that rewrites the server's cache-control header.
      */
-    private static final Interceptor sRewriteCacheControlInterceptor = new Interceptor() {
+    private final Interceptor sRewriteCacheControlInterceptor = new Interceptor() {
 
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -72,6 +73,10 @@ public class HttpManage {
     private HashMap<String, String> mHeaders = new HashMap<>();
 
     private HttpManage(String baseUrl) {
+        this(baseUrl, null);
+    }
+
+    private HttpManage(String baseUrl, Param param) {
         //缓存目录
         File files = new File(Environment.getDownloadCacheDirectory().toString(), "cache");
         //缓存大小为10M
@@ -119,10 +124,15 @@ public class HttpManage {
             }
         });
 
+        Converter.Factory factory = null;
+        if (param != null) {
+            factory = param.getConverterFactory();
+        }
+
         OkHttpClient client = builder.build();
         retrofit = new Retrofit.Builder().baseUrl(baseUrl)
                 .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(factory == null ? GsonConverterFactory.create() : factory)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
@@ -133,6 +143,38 @@ public class HttpManage {
             mServiceManage = new HttpManage(baseUrl);
         }
         return mServiceManage;
+    }
+
+    public static HttpManage get() {
+        return mServiceManage;
+    }
+
+    public static class Builder {
+
+        private Param mParam = new Param();
+
+        public Builder setConverterFactory(Converter.Factory factory) {
+            mParam.setConverterFactory(factory);
+            return this;
+        }
+
+        public void create(String baseUrl, boolean isDebug) {
+            mIsDebug = isDebug;
+            mServiceManage = new HttpManage(baseUrl, mParam);
+        }
+    }
+
+    private static class Param {
+
+        private Converter.Factory mConverterFactory;
+
+        Converter.Factory getConverterFactory() {
+            return mConverterFactory;
+        }
+
+        void setConverterFactory(Converter.Factory converterFactory) {
+            mConverterFactory = converterFactory;
+        }
     }
 
     public HashMap<String, String> getHeaders() {
