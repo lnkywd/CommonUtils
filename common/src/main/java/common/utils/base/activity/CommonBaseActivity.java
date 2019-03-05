@@ -183,4 +183,31 @@ public abstract class CommonBaseActivity extends RxAppCompatActivity implements 
         return t;
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        //fontScale不为1，需要强制设置为1
+        if (needControlFontSize() && newConfig.fontScale != 1) {
+            getResources();
+        }
+    }
+
+    @Override
+    public Resources getResources() {
+        Resources resources = super.getResources();
+        if (resources.getConfiguration().fontScale != 1) { //fontScale不为1，需要强制设置为1
+            Configuration newConfig = new Configuration();
+            newConfig.setToDefaults();//设置成默认值，即fontScale为1
+            resources.updateConfiguration(newConfig, resources.getDisplayMetrics());
+        }
+        return resources;
+    }
+
+    /**
+     * 是否需要控制字体大小
+     */
+    protected boolean needControlFontSize() {
+        return false;
+    }
+
 }

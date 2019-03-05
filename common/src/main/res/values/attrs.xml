@@ -140,4 +140,8 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="wd_NoPaddingTextView">
+        <attr name="removeDefaultPadding" format="boolean"/>
+    </declare-styleable>
+
 </resources>
