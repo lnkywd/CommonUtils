@@ -121,7 +121,22 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
             }
         }
     };
+    /**
+     * 用设置的 layoutManager
+     */
+    private RecyclerView.LayoutManager mLayoutManager;
+    /**
+     * 使用设置的 Decoration
+     */
+    private RecyclerView.ItemDecoration mItemDecoration;
 
+    public void setLayoutManager(RecyclerView.LayoutManager layoutManager) {
+        mLayoutManager = layoutManager;
+    }
+
+    public void setItemDecoration(RecyclerView.ItemDecoration itemDecoration) {
+        mItemDecoration = itemDecoration;
+    }
 
     public CommonRefreshRecyclerView(Context context) {
         super(context);
@@ -183,8 +198,8 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
         setEnableLoadMore(false);
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
-        mRecyclerView.addItemDecoration(new DividerItemBottomDecoration(mSpacing));
+        mRecyclerView.setLayoutManager(mLayoutManager == null ? linearLayoutManager : mLayoutManager);
+        mRecyclerView.addItemDecoration(mItemDecoration == null ? new DividerItemBottomDecoration(mSpacing) : mItemDecoration);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
