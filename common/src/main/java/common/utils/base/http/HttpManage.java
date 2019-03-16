@@ -7,7 +7,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +38,8 @@ public class HttpManage {
     private static long CACHE_STALE_SEC = 60 * 60 * 24 * 1;
     //查询缓存的Cache-Control设置，为if-only-cache时只查询缓存而不会请求服务器，max-stale可以配合设置缓存失效时间
     private static String CACHE_CONTROL_CACHE = "only-if-cached, max-stale=" + CACHE_STALE_SEC;
+    private static HttpManage mServiceManage;
+    private static boolean mIsDebug;
     /**
      * 这个拦截类是看别人写的，大家可以做个参考
      * 云端响应头拦截器，用来配置缓存策略
@@ -67,8 +71,6 @@ public class HttpManage {
             }
         }
     };
-    private static HttpManage mServiceManage;
-    private static boolean mIsDebug;
     private Retrofit retrofit;
     private HashMap<String, String> mHeaders = new HashMap<>();
 
@@ -129,6 +131,12 @@ public class HttpManage {
             factory = param.getConverterFactory();
         }
 
+        if (param != null) {
+            for (Interceptor interceptor : param.getInterceptors()) {
+                builder.addInterceptor(interceptor);
+            }
+        }
+
         OkHttpClient client = builder.build();
         retrofit = new Retrofit.Builder().baseUrl(baseUrl)
                 .client(client)
@@ -149,12 +157,25 @@ public class HttpManage {
         return mServiceManage;
     }
 
+    public HashMap<String, String> getHeaders() {
+        return mHeaders;
+    }
+
+    public <T> T creat(Class<T> service) {
+        return retrofit.create(service);
+    }
+
     public static class Builder {
 
         private Param mParam = new Param();
 
         public Builder setConverterFactory(Converter.Factory factory) {
             mParam.setConverterFactory(factory);
+            return this;
+        }
+
+        public Builder addInterceptor(Interceptor interceptor) {
+            mParam.getInterceptors().add(interceptor);
             return this;
         }
 
@@ -167,6 +188,7 @@ public class HttpManage {
     private static class Param {
 
         private Converter.Factory mConverterFactory;
+        private List<Interceptor> mInterceptors = new ArrayList<>();
 
         Converter.Factory getConverterFactory() {
             return mConverterFactory;
@@ -175,13 +197,12 @@ public class HttpManage {
         void setConverterFactory(Converter.Factory converterFactory) {
             mConverterFactory = converterFactory;
         }
-    }
 
-    public HashMap<String, String> getHeaders() {
-        return mHeaders;
-    }
-
-    public <T> T creat(Class<T> service) {
-        return retrofit.create(service);
+        public List<Interceptor> getInterceptors() {
+            if (mInterceptors == null) {
+                return new ArrayList<>();
+            }
+            return mInterceptors;
+        }
     }
 }
