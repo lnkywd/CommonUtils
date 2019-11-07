@@ -14,7 +14,6 @@ import android.graphics.drawable.shapes.RoundRectShape;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import java.util.Arrays;
 
@@ -27,12 +26,10 @@ import common.utils.R;
  * Description
  */
 
-public class ShapedImageView extends ImageView {
+public class ShapedImageView extends android.support.v7.widget.AppCompatImageView {
 
     public static final int SHAPE_MODE_ROUND_RECT = 1;
     public static final int SHAPE_MODE_CIRCLE = 2;
-
-    private static final int LAYER_FLAGS = Canvas.MATRIX_SAVE_FLAG | Canvas.CLIP_SAVE_FLAG | Canvas.HAS_ALPHA_LAYER_SAVE_FLAG | Canvas.FULL_COLOR_LAYER_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG;
 
     private int mShapeMode = 0;
     private float mRadius = 0;
@@ -159,7 +156,7 @@ public class ShapedImageView extends ImageView {
         super.onDraw(canvas);
 
         if (mStrokeWidth > 0 && mStrokeShape != null && mStrokeBitmap != null) {
-            int i = canvas.saveLayer(0, 0, getMeasuredWidth(), getMeasuredHeight(), null, LAYER_FLAGS);
+            int i = canvas.saveLayer(0, 0, getMeasuredWidth(), getMeasuredHeight(), null);
             mStrokePaint.setXfermode(null);
             canvas.drawBitmap(mStrokeBitmap, 0, 0, mStrokePaint);
             canvas.translate(mStrokeWidth, mStrokeWidth);

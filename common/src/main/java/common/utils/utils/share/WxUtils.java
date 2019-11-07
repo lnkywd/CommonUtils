@@ -65,9 +65,9 @@ public class WxUtils {
         this.mWXApi.registerApp(wxAppid);
     }
 
-    public static void init() {
+    public static void init(String wxId) {
         if (mWxLoginUtils == null) {
-            mWxLoginUtils = new WxUtils(LibsApplication.getInstance().getApplicationContext(), "wx1e6acf67f8bcc6c8");
+            mWxLoginUtils = new WxUtils(LibsApplication.getInstance().getApplicationContext(), wxId);
         }
     }
 

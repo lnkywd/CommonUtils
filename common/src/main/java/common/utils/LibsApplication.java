@@ -74,7 +74,13 @@ public class LibsApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        MultiDex.install(this);
+        if (addMultiDex()) {
+            MultiDex.install(this);
+        }
+    }
+
+    protected boolean addMultiDex() {
+        return true;
     }
 
     @Override

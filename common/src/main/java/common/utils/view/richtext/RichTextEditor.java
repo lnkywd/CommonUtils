@@ -26,7 +26,7 @@ import android.widget.ScrollView;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.jzvd.JZVideoPlayerStandard;
+import cn.jzvd.JzvdStd;
 import common.utils.R;
 import common.utils.utils.PixelUtils;
 import common.utils.view.ViewClick;
@@ -319,7 +319,7 @@ public class RichTextEditor extends ScrollView {
             imageLayout.findViewById(R.id.layout).setOnClickListener(new ViewClick() {
                 @Override
                 public void onViewClick(View view) {
-                    JZVideoPlayerStandard.startFullscreen(getContext(), JZVideoPlayerStandard.class, videoPath);
+                    JzvdStd.startFullscreenDirectly(getContext(), JzvdStd.class, videoPath, "");
                 }
             });
             imageView.setVideo(true);

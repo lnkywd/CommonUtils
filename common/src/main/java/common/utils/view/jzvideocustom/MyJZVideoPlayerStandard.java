@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import cn.jzvd.JZVideoPlayerStandard;
+import cn.jzvd.JzvdStd;
 
 /**
  * @author wd
@@ -15,7 +15,7 @@ import cn.jzvd.JZVideoPlayerStandard;
  * 监听到视频播放的生命周期和播放状态
  */
 
-public class MyJZVideoPlayerStandard extends JZVideoPlayerStandard {
+public class MyJZVideoPlayerStandard extends JzvdStd {
 
     public OnJZVideoStateListener mListener;
 
@@ -38,7 +38,7 @@ public class MyJZVideoPlayerStandard extends JZVideoPlayerStandard {
 
     @Override
     public int getLayoutId() {
-        return cn.jzvd.R.layout.jz_layout_standard;
+        return cn.jzvd.R.layout.jz_layout_std;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class MyJZVideoPlayerStandard extends JZVideoPlayerStandard {
         super.onClick(v);
         int i = v.getId();
         if (i == cn.jzvd.R.id.fullscreen && mListener != null) {
-            if (currentScreen == SCREEN_WINDOW_FULLSCREEN) {
+            if (this.screen == SCREEN_TINY) {
                 //click quit fullscreen
                 mListener.onQuitFullClick();
             } else {
@@ -134,16 +134,16 @@ public class MyJZVideoPlayerStandard extends JZVideoPlayerStandard {
     }
 
     @Override
-    public void startWindowFullscreen() {
-        super.startWindowFullscreen();
+    public void setScreenFullscreen() {
+        super.setScreenFullscreen();
         if (mListener != null) {
             mListener.startWindowFullscreen();
         }
     }
 
     @Override
-    public void startWindowTiny() {
-        super.startWindowTiny();
+    public void setScreenTiny() {
+        super.setScreenTiny();
         if (mListener != null) {
             mListener.startWindowTiny();
         }
