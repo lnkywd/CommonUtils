@@ -23,6 +23,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+
+        }
+        beta {
+
+        }
     }
 
     dataBinding {
@@ -127,5 +133,7 @@ dependencies {
     provided 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
 }
 
-apply from: 'bintray.gradle'
+if (!LOCAL_DEPENDENCY){
+    apply from: 'bintray.gradle'
+}
 
