@@ -91,7 +91,7 @@ public class HttpManage {
                     if (message.startsWith("{") || message.startsWith("[")) {
                         JSONObject jsonObject = new JSONObject(message);
                         msg = jsonObject.toString(4);
-                        LogUtils.json(msg);
+                        LogUtils.json("OkHttp",msg);
                         msg = jsonObject.toString();
                     }
                 } catch (JSONException e) {
@@ -109,9 +109,6 @@ public class HttpManage {
         builder.connectTimeout(30, TimeUnit.SECONDS);
         builder.cache(mCache);
         builder.addNetworkInterceptor(sRewriteCacheControlInterceptor);
-        if (mIsDebug) {
-            builder.addInterceptor(httpLoggingInterceptor);
-        }
         builder.addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
@@ -137,6 +134,10 @@ public class HttpManage {
             }
         }
 
+        // 最后添加 LoggingInterceptor，上面的拦截器添加的内容也可以打印出来
+        if (mIsDebug) {
+            builder.addInterceptor(httpLoggingInterceptor);
+        }
         OkHttpClient client = builder.build();
         retrofit = new Retrofit.Builder().baseUrl(baseUrl)
                 .client(client)

@@ -3,6 +3,7 @@ package common.utils.view;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -254,6 +255,17 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
         mAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void setBackgroundColor(int color) {
+        super.setBackgroundColor(color);
+    }
+
+    public void setRVBackgroundColor(int color){
+        if (mRecyclerView != null){
+            mRecyclerView.setBackgroundColor(color);
+        }
+    }
+
     public void onHttpComplete(boolean showEmpty) {
         finishRefresh();
         finishLoadMore();
@@ -264,6 +276,26 @@ public class CommonRefreshRecyclerView extends SmartRefreshLayout {
         if (enableQuickLoad && mCopyLoadMoreListener != null) {
             mLoadMoreListener = mCopyLoadMoreListener;
             mCopyLoadMoreListener = null;
+        }
+    }
+
+    public void openDefaultAnimator() {
+        if (mRecyclerView != null && mRecyclerView.getItemAnimator() != null){
+            mRecyclerView.getItemAnimator().setAddDuration(120);
+            mRecyclerView.getItemAnimator().setChangeDuration(250);
+            mRecyclerView.getItemAnimator().setMoveDuration(250);
+            mRecyclerView.getItemAnimator().setRemoveDuration(120);
+            ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(true);
+        }
+    } /* * 关闭默认局部刷新动画 */
+
+    public void closeDefaultAnimator() {
+        if (mRecyclerView != null && mRecyclerView.getItemAnimator() != null){
+            mRecyclerView.getItemAnimator().setAddDuration(0);
+            mRecyclerView.getItemAnimator().setChangeDuration(0);
+            mRecyclerView.getItemAnimator().setMoveDuration(0);
+            mRecyclerView.getItemAnimator().setRemoveDuration(0);
+            ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         }
     }
 
