@@ -3,6 +3,7 @@ package common.utils.utils;
 import android.os.Environment;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -36,6 +37,8 @@ import javax.xml.transform.stream.StreamSource;
 * Log相关工具
 * */
 public final class LogUtils {
+
+    private static final String TAG = LogUtils.class.getSimpleName();
 
     public static final int V = Log.VERBOSE;
     public static final int D = Log.DEBUG;
@@ -95,48 +98,48 @@ public final class LogUtils {
         log(V, sGlobalTag, contents);
     }
 
-    public static void v(final String tag, final Object content, final Object... contents) {
-        log(V, tag, content, contents);
+    public static void v(final String tag, final Object... contents) {
+        log(V, tag, contents);
     }
 
     public static void d(final Object contents) {
         log(D, sGlobalTag, contents);
     }
 
-    public static void d(final String tag, final Object content, final Object... contents) {
-        log(D, tag, content, contents);
+    public static void d(final String tag, final Object... contents) {
+        log(D, tag, contents);
     }
 
     public static void i(final Object contents) {
         log(I, sGlobalTag, contents);
     }
 
-    public static void i(final String tag, final Object content, final Object... contents) {
-        log(I, tag, content, contents);
+    public static void i(final String tag, final Object... contents) {
+        log(I, tag, contents);
     }
 
     public static void w(final Object contents) {
         log(W, sGlobalTag, contents);
     }
 
-    public static void w(final String tag, final Object content, final Object... contents) {
-        log(W, tag, content, contents);
+    public static void w(final String tag, final Object... contents) {
+        log(W, tag, contents);
     }
 
     public static void e(final Object contents) {
         log(E, sGlobalTag, contents);
     }
 
-    public static void e(final String tag, final Object content, final Object... contents) {
-        log(E, tag, content, contents);
+    public static void e(final String tag, final Object... contents) {
+        log(E, tag, contents);
     }
 
     public static void a(final Object contents) {
         log(A, sGlobalTag, contents);
     }
 
-    public static void a(final String tag, final Object content, final Object... contents) {
-        log(A, tag, content, contents);
+    public static void a(final String tag, final Object... contents) {
+        log(A, tag, contents);
     }
 
     public static void file(final Object contents) {
@@ -188,17 +191,69 @@ public final class LogUtils {
     }
 
     private static void log(final int type, final String tag, final Object... contents) {
-        if (!sLogSwitch || (!sLog2ConsoleSwitch && !sLog2FileSwitch)) return;
         int type_low = type & 0x0f, type_high = type & 0xf0;
+        String body = processBody(type_high, contents);
+        log2XLog(type_low, tag, body);
+        if (!sLogSwitch || (!sLog2ConsoleSwitch && !sLog2FileSwitch)) return;
         if (type_low < sConsoleFilter && type_low < sFileFilter) return;
         final TagHead tagHead = processTagAndHead(tag);
-        String body = processBody(type_high, contents);
         if (sLog2ConsoleSwitch && type_low >= sConsoleFilter && type_high != FILE) {
             print2Console(type_low, tagHead.tag, tagHead.consoleHead, body);
         }
         if ((sLog2FileSwitch || type_high == FILE) && type_low >= sFileFilter) {
             print2File(type_low, tagHead.tag, tagHead.fileHead + body);
         }
+    }
+
+    /**
+     * 输出到xlog
+     */
+    private static void log2XLog(int type, String tag, String msg) {
+        StackTraceElement ste = (new Throwable()).getStackTrace()[1];
+        String log = TextUtils.isEmpty(tag) ? build(msg, ste) : String.format("[%s]%s", tag, build(msg, ste));
+        switch (type) {
+            case V:
+                com.tencent.mars.xlog.Log.v(TAG, log);
+                break;
+            case D:
+                com.tencent.mars.xlog.Log.d(TAG, log);
+                break;
+            case I:
+                com.tencent.mars.xlog.Log.i(TAG, log);
+                break;
+            case W:
+                com.tencent.mars.xlog.Log.w(TAG, log);
+                break;
+            case E:
+                com.tencent.mars.xlog.Log.e(TAG, log);
+                break;
+            default:
+        }
+    }
+
+    private static String build(String log, StackTraceElement ste) {
+        StringBuilder buf = new StringBuilder();
+        if (ste.isNativeMethod()) {
+            buf.append("(Native Method)");
+        } else {
+            String fName = ste.getFileName();
+            if (fName == null) {
+                buf.append("(Unknown Source)");
+            } else {
+                int lineNum = ste.getLineNumber();
+                buf.append('(');
+                buf.append(fName);
+                if (lineNum >= 0) {
+                    buf.append(':');
+                    buf.append(lineNum);
+                }
+
+                buf.append("):");
+            }
+        }
+
+        buf.append(log);
+        return buf.toString();
     }
 
     private static TagHead processTagAndHead(String tag) {

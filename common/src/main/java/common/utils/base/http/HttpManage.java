@@ -1,6 +1,7 @@
 package common.utils.base.http;
 
 import android.os.Environment;
+import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,19 +22,19 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.internal.platform.Platform;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-
-import static okhttp3.internal.platform.Platform.INFO;
 
 /**
  * Created by fzz on 2017/11/2 0002.
  */
 
 public class HttpManage {
+
+    private static final String TAG = "OkHTTP";
+
     //设缓存有效期为1天
     private static long CACHE_STALE_SEC = 60 * 60 * 24 * 1;
     //查询缓存的Cache-Control设置，为if-only-cache时只查询缓存而不会请求服务器，max-stale可以配合设置缓存失效时间
@@ -88,17 +89,18 @@ public class HttpManage {
             public void log(String message) {
                 String msg = message;
                 try {
-                    if (message.startsWith("{") || message.startsWith("[")) {
-                        JSONObject jsonObject = new JSONObject(message);
+                    if (msg.startsWith("{") || msg.startsWith("[")) {
+                        JSONObject jsonObject = new JSONObject(msg);
                         msg = jsonObject.toString(4);
-                        LogUtils.json("OkHttp",msg);
-                        msg = jsonObject.toString();
+                        LogUtils.json("OkHttp", msg);
+                    } else if (!TextUtils.isEmpty(msg)) {
+                        LogUtils.d(TAG, msg);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     msg = message;
                 }
-                Platform.get().log(INFO, msg, null);
+//                Platform.get().log(INFO, msg, null);
             }
         });
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -135,9 +137,9 @@ public class HttpManage {
         }
 
         // 最后添加 LoggingInterceptor，上面的拦截器添加的内容也可以打印出来
-        if (mIsDebug) {
+//        if (mIsDebug) {
             builder.addInterceptor(httpLoggingInterceptor);
-        }
+//        }
         OkHttpClient client = builder.build();
         retrofit = new Retrofit.Builder().baseUrl(baseUrl)
                 .client(client)

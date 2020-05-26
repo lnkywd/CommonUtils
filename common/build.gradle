@@ -26,9 +26,6 @@ android {
         debug {
 
         }
-        beta {
-
-        }
     }
 
     dataBinding {
@@ -40,6 +37,12 @@ android {
     }
 
     packageBuildConfig(false)
+
+    repositories {
+        flatDir {
+            dirs 'libs' //this way we can find the .aar file in libs folder
+        }
+    }
 }
 
 ext {
@@ -47,7 +50,7 @@ ext {
 }
 
 dependencies {
-    api fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(dir: 'libs', include: ['*.jar','*.aar'])
     api "com.android.support:appcompat-v7:${supportLibVersion}"
     api "com.android.support:support-v4:${supportLibVersion}"
     api "com.android.support:design:${supportLibVersion}"
@@ -123,6 +126,8 @@ dependencies {
     api 'com.github.chenBingX:SuperTextView:v3.0.0'
     // RxPermissions https://github.com/tbruyelle/RxPermissions
     api 'com.github.tbruyelle:rxpermissions:0.10.2'
+    // xlog https://github.com/Tencent/mars#mars_cn
+    api 'com.tencent.mars:mars-xlog:1.2.3'
 
     /**
      * 下面的依赖包都只是包含，如果调用层没有使用，不需要编译依赖，那么打包时将不会包含进去，并不会增加 APK 的大小

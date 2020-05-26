@@ -5,22 +5,21 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 //崩溃相关工具类
 
 public final class CrashUtils {
+
+    private static final String TAG = CrashUtils.class.getSimpleName();
 
     private static String defaultDir;
     private static String dir;
@@ -67,35 +66,37 @@ public final class CrashUtils {
                     System.exit(0);
                     return;
                 }
-                Date now = new Date(System.currentTimeMillis());
-                String fileName = FORMAT.format(now) + ".txt";
-                final String fullPath = (dir == null ? defaultDir : dir) + fileName;
-                if (!createOrExistsFile(fullPath)) return;
-                if (sExecutor == null) {
-                    sExecutor = Executors.newSingleThreadExecutor();
-                }
-                sExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        PrintWriter pw = null;
-                        try {
-                            pw = new PrintWriter(new FileWriter(fullPath, false));
-                            pw.write(CRASH_HEAD);
-                            e.printStackTrace(pw);
-                            Throwable cause = e.getCause();
-                            while (cause != null) {
-                                cause.printStackTrace(pw);
-                                cause = cause.getCause();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } finally {
-                            if (pw != null) {
-                                pw.close();
-                            }
-                        }
-                    }
-                });
+                // 发生崩溃后，进行文件写入
+                LogUtils.e(TAG, Log.getStackTraceString(e));
+//                Date now = new Date(System.currentTimeMillis());
+//                String fileName = FORMAT.format(now) + ".txt";
+//                final String fullPath = (dir == null ? defaultDir : dir) + fileName;
+//                if (!createOrExistsFile(fullPath)) return;
+//                if (sExecutor == null) {
+//                    sExecutor = Executors.newSingleThreadExecutor();
+//                }
+//                sExecutor.execute(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        PrintWriter pw = null;
+//                        try {
+//                            pw = new PrintWriter(new FileWriter(fullPath, false));
+//                            pw.write(CRASH_HEAD);
+//                            e.printStackTrace(pw);
+//                            Throwable cause = e.getCause();
+//                            while (cause != null) {
+//                                cause.printStackTrace(pw);
+//                                cause = cause.getCause();
+//                            }
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        } finally {
+//                            if (pw != null) {
+//                                pw.close();
+//                            }
+//                        }
+//                    }
+//                });
                 if (DEFAULT_UNCAUGHT_EXCEPTION_HANDLER != null) {
                     DEFAULT_UNCAUGHT_EXCEPTION_HANDLER.uncaughtException(t, e);
                 }
